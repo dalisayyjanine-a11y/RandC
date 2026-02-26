@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RNC System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Enhanced Animated Background with Intense Glow */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.35;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ultra Glow Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.7) 0%, transparent 70%);
+            top: -80px;
+            left: -80px;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.7) 0%, transparent 70%);
+            bottom: -100px;
+            right: -80px;
+            animation-delay: -5s;
+        }
+
+        .glow-orb-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(247, 2, 168, 0.5) 0%, transparent 70%);
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            animation-delay: -2s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Floating Particles - More Intense */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Glassmorphism Login Container with Intense Glow */
+        .login-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 0 40px rgba(102, 126, 234, 0.3),
+                0 0 80px rgba(118, 75, 162, 0.2),
+                0 25px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            width: 100%;
+            max-width: 420px;
+            animation: slideUp 0.8s ease-out;
+            z-index: 10;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 50%, rgba(247, 2, 168, 0.2) 100%);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 60px;
+        }
+
+        .login-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+            display: block;
+            animation: bounce 2s ease-in-out infinite, iconGlow 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes iconGlow {
+            from { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)); }
+            to { filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1)); }
+        }
+
+        .login-header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .login-header p {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .login-body {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.2),
+                0 0 20px rgba(102, 126, 234, 0.3);
+            background: white;
+            color: #333;
+        }
+
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Ultra Glowing Submit Button */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f702a8 100%);
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 
+                0 0 25px rgba(102, 126, 234, 0.6),
+                0 0 50px rgba(118, 75, 162, 0.4),
+                0 8px 25px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease-out 0.6s both, btnGradientMove 3s ease infinite;
+        }
+
+        @keyframes btnGradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 0 40px rgba(102, 126, 234, 0.9),
+                0 0 70px rgba(118, 75, 162, 0.7),
+                0 0 100px rgba(247, 2, 168, 0.5),
+                0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 
+                0 0 50px rgba(102, 126, 234, 1),
+                0 0 80px rgba(118, 75, 162, 0.9),
+                0 0 120px rgba(247, 2, 168, 0.7),
+                0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 22px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: translateX(-3px);
+        }
+
+        .back-home svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 90%;
+                margin: 20px;
+            }
+
+            .login-header {
+                padding: 28px 20px;
+            }
+
+            .login-header h2 {
+                font-size: 28px;
+            }
+
+            .login-body {
+                padding: 25px 20px;
+            }
+
+            .login-icon {
+                font-size: 48px;
+            }
+        }
+
+        /* Password Eye Toggle Styles */
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper input {
+            padding-right: 50px;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            user-select: none;
+            z-index: 10;
+            padding: 5px;
+        }
+
+        .eye-icon:hover {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.8);
+        }
+
+        .eye-icon.closed {
+            animation: eyeClose 0.3s ease forwards;
+        }
+
+        .eye-icon.open {
+            animation: eyeOpen 0.3s ease forwards;
+        }
+
+        @keyframes eyeClose {
+            0% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateY(-50%) scale(1.2); }
+            100% { opacity: 1; transform: translateY(-50%) scale(1); }
+        }
+
+        @keyframes eyeOpen {
+            0% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateY(-50%) scale(0.8); }
+            100% { opacity: 1; transform: translateY(-50%) scale(1); }
+        }
+
+        .eye-icon .eye-closed {
+            display: block;
+        }
+
+        .eye-icon .eye-open {
+            display: none;
+        }
+
+        .eye-icon.active .eye-closed {
+            display: none;
+        }
+
+        .eye-icon.active .eye-open {
+            display: block;
+        }
+
+        /* Password input enhanced styling when visible */
+        .password-wrapper input[type="text"] {
+            background: white;
+            color: #333;
+            border-color: rgba(102, 126, 234, 0.8);
+        }
+
+        /* Glowing Notification Styles */
+        .notification {
+            position: relative;
+            width: auto;
+            margin: 0 auto;
+            padding: 18px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            animation: slideInNotification 0.5s ease-out, notificationPulse 2s ease-in-out;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .notification.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 
+                0 0 20px rgba(34, 197, 94, 0.6),
+                0 0 40px rgba(34, 197, 94, 0.4),
+                0 0 60px rgba(34, 197, 94, 0.3),
+                0 10px 40px rgba(34, 197, 94, 0.2);
+            animation: slideInNotification 0.5s ease-out, sucessGlow 2s ease-in-out infinite;
+        }
+
+        .notification.success::before {
+            content: '✓';
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: checkmarkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.8));
+        }
+
+        .notification.success::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            animation: glowPulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 
+                0 0 20px rgba(239, 68, 68, 0.6),
+                0 0 40px rgba(239, 68, 68, 0.4),
+                0 0 60px rgba(239, 68, 68, 0.3),
+                0 10px 40px rgba(239, 68, 68, 0.2);
+            animation: slideInNotification 0.5s ease-out, errorGlow 2s ease-in-out infinite;
+        }
+
+        .notification.error::before {
+            content: '✕';
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: shakeNotification 0.5s ease-in-out;
+            filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+        }
+
+        .notification.error::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            animation: glowPulseError 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Email Error - Orange Glow */
+        .notification.email-error {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+            border-color: rgba(249, 115, 22, 0.5);
+            box-shadow: 
+                0 0 20px rgba(249, 115, 22, 0.6),
+                0 0 40px rgba(249, 115, 22, 0.4),
+                0 0 60px rgba(249, 115, 22, 0.3),
+                0 10px 40px rgba(249, 115, 22, 0.2);
+            animation: slideInNotification 0.5s ease-out, emailGlow 2s ease-in-out infinite;
+        }
+
+        .notification.email-error::before {
+            content: '✉️';
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: wiggleNotification 0.5s ease-in-out;
+            filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.8));
+        }
+
+        .notification.email-error::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            border: 2px solid rgba(249, 115, 22, 0.3);
+            animation: glowPulseEmail 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Password Error - Red Glow */
+        .notification.password-error {
+            background: rgba(220, 38, 38, 0.15);
+            color: #dc2626;
+            border-color: rgba(220, 38, 38, 0.5);
+            box-shadow: 
+                0 0 20px rgba(220, 38, 38, 0.6),
+                0 0 40px rgba(220, 38, 38, 0.4),
+                0 0 60px rgba(220, 38, 38, 0.3),
+                0 10px 40px rgba(220, 38, 38, 0.2);
+            animation: slideInNotification 0.5s ease-out, passwordGlow 2s ease-in-out infinite;
+        }
+
+        .notification.password-error::before {
+            content: '';
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: lockShake 0.5s ease-in-out;
+            filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.8));
+        }
+
+        .notification.password-error::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            animation: glowPulsePassword 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Validation Error - Blue Glow */
+        .notification.validation-error {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 
+                0 0 20px rgba(59, 130, 246, 0.6),
+                0 0 40px rgba(59, 130, 246, 0.4),
+                0 0 60px rgba(59, 130, 246, 0.3),
+                0 10px 40px rgba(59, 130, 246, 0.2);
+            animation: slideInNotification 0.5s ease-out, validationGlow 2s ease-in-out infinite;
+        }
+
+        .notification.validation-error::before {
+            content: '⚠️';
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 0.5s ease-in-out;
+            filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8));
+        }
+
+        .notification.validation-error::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            animation: glowPulseValidation 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Account Blocked - Red Glow */
+        .notification.account-blocked {
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            border-color: rgba(220, 38, 38, 0.6);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.7);
+            animation: slideInNotification 0.5s ease-out;
+        }
+
+        .notification.account-blocked::before {
+            content: '🔒';
+            font-size: 22px;
+        }
+
+        @keyframes slideInNotification {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes notificationPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes sucessGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(34, 197, 94, 0.6),
+                    0 0 40px rgba(34, 197, 94, 0.4),
+                    0 0 60px rgba(34, 197, 94, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(34, 197, 94, 0.8),
+                    0 0 60px rgba(34, 197, 94, 0.6),
+                    0 0 90px rgba(34, 197, 94, 0.4);
+            }
+        }
+
+        @keyframes errorGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(239, 68, 68, 0.6),
+                    0 0 40px rgba(239, 68, 68, 0.4),
+                    0 0 60px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(239, 68, 68, 0.8),
+                    0 0 60px rgba(239, 68, 68, 0.6),
+                    0 0 90px rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        @keyframes emailGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(249, 115, 22, 0.6),
+                    0 0 40px rgba(249, 115, 22, 0.4),
+                    0 0 60px rgba(249, 115, 22, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(249, 115, 22, 0.8),
+                    0 0 60px rgba(249, 115, 22, 0.6),
+                    0 0 90px rgba(249, 115, 22, 0.4);
+            }
+        }
+
+        @keyframes passwordGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(220, 38, 38, 0.6),
+                    0 0 40px rgba(220, 38, 38, 0.4),
+                    0 0 60px rgba(220, 38, 38, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(220, 38, 38, 0.8),
+                    0 0 60px rgba(220, 38, 38, 0.6),
+                    0 0 90px rgba(220, 38, 38, 0.4);
+            }
+        }
+
+        @keyframes validationGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(59, 130, 246, 0.6),
+                    0 0 40px rgba(59, 130, 246, 0.4),
+                    0 0 60px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(59, 130, 246, 0.8),
+                    0 0 60px rgba(59, 130, 246, 0.6),
+                    0 0 90px rgba(59, 130, 246, 0.4);
+            }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
+            }
+        }
+
+        @keyframes glowPulseError {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
+            }
+        }
+
+        @keyframes glowPulseEmail {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(249, 115, 22, 0.8);
+            }
+        }
+
+        @keyframes glowPulsePassword {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+            }
+        }
+
+        @keyframes glowPulseValidation {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+            }
+        }
+
+        @keyframes checkmarkBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-45deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        @keyframes wiggleNotification {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-8px) rotate(-3deg); }
+            75% { transform: translateX(8px) rotate(3deg); }
+        }
+
+        @keyframes lockShake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-6px) rotate(-2deg); }
+            75% { transform: translateX(6px) rotate(2deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        @keyframes shakeNotification {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-5px) rotate(-2deg); }
+            75% { transform: translateX(5px) rotate(2deg); }
+        }
+
+        .notification-text {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .notification.hide {
+            animation: slideOutNotification 0.5s ease-in forwards;
+        }
+
+        @keyframes slideOutNotification {
+            to {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        /* Button loading state */
+        .login-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            right: 20px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .notification {
+                margin: 0 auto 15px auto;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <a href="/" class="back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+    </a>
+
+    <div class="login-container">
+        <!-- Notification Container - Inside Modal -->
+        <div id="notificationContainer" style="position: absolute; top: 0; left: 0; right: 0; padding: 15px; z-index: 100;"></div>
+
+        <div class="login-header">
+            <span class="login-icon">🔐</span>
+            <h2>Login</h2>
+            <p>Access your RNC System account</p>
+        </div>
+
+        <form id="loginForm" class="login-body">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email"
+                    name="email" 
+                    placeholder="Enter your email" 
+                    required 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="password"
+                        name="password" 
+                        placeholder="Enter your password" 
+                        required 
+                    />
+                    <span class="eye-icon" id="eyeIcon">
+                        <span class="eye-closed">👁️</span>
+                        <span class="eye-open">👁️‍🗨️</span>
+                    </span>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+
+            <div class="footer-text">
+                <p>© 2026 RNC System. All rights reserved.</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Create floating particles with enhanced glow
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 35;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 4 + 's';
+            particle.style.animationDuration = (3 + Math.random() * 3) + 's';
+            
+            // Vary particle sizes
+            const size = 3 + Math.random() * 8;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Random colors with glow
+            const colors = ['#667eea', '#764ba2', '#23a6d5', '#f702a8', '#ffffff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 8px ${color}, 0 0 15px ${color}`;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Password Eye Toggle - Show on mouse touch/hover
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        // Show password when mouse enters the eye icon
+        eyeIcon.addEventListener('mouseenter', function() {
+            passwordInput.setAttribute('type', 'text');
+            eyeIcon.classList.add('active');
+        });
+
+        // Hide password when mouse leaves the eye icon
+        eyeIcon.addEventListener('mouseleave', function() {
+            passwordInput.setAttribute('type', 'password');
+            eyeIcon.classList.remove('active');
+        });
+
+        // ============ NOTIFICATION SYSTEM ============
+        function showNotification(message, type = 'success', errorType = null) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            
+            let notificationClass = type;
+            
+            // Determine specific notification class based on error type
+            if (type === 'error' && errorType) {
+                if (errorType === 'email_not_found') {
+                    notificationClass = 'email-error';
+                } else if (errorType === 'password_wrong') {
+                    notificationClass = 'password-error';
+                } else if (errorType === 'validation') {
+                    notificationClass = 'validation-error';
+                } else if (errorType === 'account_blocked') {
+                    notificationClass = 'account-blocked';
+                }
+            }
+            
+            notification.className = `notification ${notificationClass}`;
+            notification.innerHTML = `<span class="notification-text">${message}</span>`;
+            
+            container.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }
+
+        // ============ LOGIN FORM HANDLER ============
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const emailInput = document.getElementById('email');
+        const passwordField = document.getElementById('password');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordField.value;
+
+            // Validate inputs
+            if (!email || !password) {
+                showNotification('Please fill in all fields', 'error', 'validation');
+                return;
+            }
+
+            // Disable button and show loading state
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Redirect after showing notification
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/admin-dashboard';
+                    }, 1500);
+                } else {
+                    showNotification(data.message || 'Login failed', 'error', data.errorType);
+                    loginBtn.disabled = false;
+                    loginBtn.classList.remove('loading');
+                    loginBtn.textContent = 'Sign In';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Network error. Please try again.', 'error', 'server_error');
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>

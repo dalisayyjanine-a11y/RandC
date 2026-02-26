@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Order Form - RNC System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        /* Enhanced Animated Background with Intense Glow */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.25;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ultra Glow Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.5) 0%, transparent 70%);
+            top: -50px;
+            left: -50px;
+        }
+
+        .glow-orb-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.5) 0%, transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-80px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            min-height: 100vh;
+            padding: 25px 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            left: -280px;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header .logo {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+            animation: bounce 2s ease-in-out infinite, iconGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes iconGlow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); }
+            to { filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.9)); }
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.6em;
+            color: white;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 25px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #23a6d5;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .sidebar-menu li a.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border-left-color: #f702a8;
+            text-shadow: 0 0 15px rgba(247, 2, 168, 0.5);
+        }
+
+        .menu-icon {
+            font-size: 1.3em;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 25px;
+            transition: margin 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section:first-of-type {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section-title {
+            color: #23a6d5;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(35, 166, 213, 0.5);
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(35, 166, 213, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        label .required {
+            color: #ef4444;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #23a6d5;
+            box-shadow: 0 0 20px rgba(35, 166, 213, 0.4), inset 0 0 10px rgba(35, 166, 213, 0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        /* Enhanced Select/Dropdown Glass Design */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        select:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(35, 166, 213, 0.6);
+        }
+
+        select option {
+            background: #1a1625;
+            color: white;
+            border-radius: 8px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Device Type Selection */
+        .device-type-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-label:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #23a6d5;
+        }
+
+        .radio-label input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Problem List */
+        .problem-list {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .problem-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .problem-item:last-child {
+            border-bottom: none;
+        }
+
+        .problem-item input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .problem-item label {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .add-problem-btn {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.5);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .add-problem-btn:hover {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 10px rgba(35, 166, 213, 0.3);
+        }
+
+        /* Custom Problem Input */
+        .custom-problem-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .custom-problem-input input {
+            flex: 1;
+        }
+
+        .custom-problem-input button {
+            padding: 12px 20px;
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .custom-problem-input button:hover {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 10px rgba(35, 166, 213, 0.3);
+        }
+
+        /* Selected Problems Display */
+        .selected-problems {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .problem-tag {
+            background: rgba(247, 2, 168, 0.2);
+            color: #f702a8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(247, 2, 168, 0.5);
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .problem-tag button {
+            background: none;
+            border: none;
+            color: #f702a8;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Signature Pad */
+        .signature-container {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 15px;
+        }
+
+        #signaturePad {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: crosshair;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .signature-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .signature-controls button {
+            padding: 8px 16px;
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.5);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .signature-controls button:hover {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 10px rgba(35, 166, 213, 0.3);
+        }
+
+        /* Terms and Conditions */
+        .terms-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .terms-container h4 {
+            color: #23a6d5;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .terms-container ol {
+            color: rgba(255, 255, 255, 0.8);
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .terms-container li {
+            margin-bottom: 12px;
+            font-size: 0.9em;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            margin-top: 4px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .terms-checkbox label {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        /* Form Buttons */
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .burger-menu.show {
+            display: flex;
+        }
+
+        .burger-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .burger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .burger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            z-index: 2000;
+            animation: slideInNotification 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+            position: fixed;
+        }
+
+        .notification.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes slideInNotification {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Submitted Job Orders Table Styles */
+        .table-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+            overflow-x: auto;
+        }
+
+        .table-container h2 {
+            color: white;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-bottom: 2px solid rgba(35, 166, 213, 0.3);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            color: #23a6d5;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-bottom-color: rgba(35, 166, 213, 0.3);
+        }
+
+        td {
+            padding: 14px 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-badge {
+            background: rgba(100, 150, 200, 0.2);
+            color: #6496c8;
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .status-badge[data-status="Diagnostic"] {
+            background: rgba(250, 200, 20, 0.2);
+            color: #fac814;
+            border-color: rgba(250, 200, 20, 0.5);
+        }
+
+        .status-badge[data-status="Pending"] {
+            background: rgba(255, 150, 0, 0.2);
+            color: #ff9600;
+            border-color: rgba(255, 150, 0, 0.5);
+        }
+
+        .status-badge[data-status="In Progress"] {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border-color: rgba(35, 166, 213, 0.5);
+        }
+
+        .status-badge[data-status="Checking"] {
+            background: rgba(247, 2, 168, 0.2);
+            color: #f702a8;
+            border-color: rgba(247, 2, 168, 0.5);
+        }
+
+        .status-badge[data-status="Completed"] {
+            background: rgba(34, 100, 50, 0.2);
+            color: #226432;
+            border-color: rgba(34, 100, 50, 0.5);
+        }
+
+        .status-badge[data-status="Request Submitted"] {
+            background: rgba(100, 150, 200, 0.2);
+            color: #6496c8;
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-view,
+        .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-view {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.5);
+        }
+
+        .btn-view:hover {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 10px rgba(35, 166, 213, 0.3);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal */
+        .modal {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px;
+            animation: slideUp 0.4s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .job-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .job-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .job-detail-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .job-detail-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        .problems-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .problems-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .problems-list li {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .problems-list li:before {
+            content: "• ";
+            color: #23a6d5;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .problems-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Status Update Section */
+        .status-update-section {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .status-update-section label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .status-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .status-option {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        /* Status Colors */
+        .status-submitted {
+            border-color: rgba(100, 150, 200, 0.5);
+            color: #6496c8;
+        }
+
+        .status-submitted:hover {
+            background: rgba(100, 150, 200, 0.2);
+            box-shadow: 0 0 15px rgba(100, 150, 200, 0.3);
+        }
+
+        .status-diagnostic {
+            border-color: rgba(250, 200, 20, 0.5);
+            color: #fac814;
+        }
+
+        .status-diagnostic:hover {
+            background: rgba(250, 200, 20, 0.2);
+            box-shadow: 0 0 15px rgba(250, 200, 20, 0.3);
+        }
+
+        .status-pending {
+            border-color: rgba(255, 150, 0, 0.5);
+            color: #ff9600;
+        }
+
+        .status-pending:hover {
+            background: rgba(255, 150, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 150, 0, 0.3);
+        }
+
+        .status-inprogress {
+            border-color: rgba(35, 166, 213, 0.5);
+            color: #23a6d5;
+        }
+
+        .status-inprogress:hover {
+            background: rgba(35, 166, 213, 0.2);
+            box-shadow: 0 0 15px rgba(35, 166, 213, 0.3);
+        }
+
+        .status-checking {
+            border-color: rgba(247, 2, 168, 0.5);
+            color: #f702a8;
+        }
+
+        .status-checking:hover {
+            background: rgba(247, 2, 168, 0.2);
+            box-shadow: 0 0 15px rgba(247, 2, 168, 0.3);
+        }
+
+        .status-completed {
+            border-color: rgba(34, 100, 50, 0.5);
+            color: #226432;
+        }
+
+        .status-completed:hover {
+            background: rgba(34, 100, 50, 0.2);
+            box-shadow: 0 0 15px rgba(34, 100, 50, 0.3);
+        }
+
+        .status-option.active {
+            border-width: 3px;
+            transform: scale(1.05);
+        }
+
+        .status-submitted.active {
+            background: rgba(100, 150, 200, 0.3);
+            box-shadow: 0 0 25px rgba(100, 150, 200, 0.5);
+        }
+
+        .status-diagnostic.active {
+            background: rgba(250, 200, 20, 0.3);
+            box-shadow: 0 0 25px rgba(250, 200, 20, 0.5);
+        }
+
+        .status-pending.active {
+            background: rgba(255, 150, 0, 0.3);
+            box-shadow: 0 0 25px rgba(255, 150, 0, 0.5);
+        }
+
+        .status-inprogress.active {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 25px rgba(35, 166, 213, 0.5);
+        }
+
+        .status-checking.active {
+            background: rgba(247, 2, 168, 0.3);
+            box-shadow: 0 0 25px rgba(247, 2, 168, 0.5);
+        }
+
+        .status-completed.active {
+            background: rgba(34, 100, 50, 0.3);
+            box-shadow: 0 0 25px rgba(34, 100, 50, 0.5);
+        }
+
+        /* Progress Bar */
+        .status-progress {
+            margin-top: 15px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .status-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: all 0.6s ease;
+            animation: progressPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Modal Footer */
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modal-cancel {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-modal-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-modal-confirm {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-modal-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-modal-delete {
+            padding: 12px 25px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-modal-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* PDF Receipt Styles (Hidden) */
+        #pdfReceipt {
+            display: none;
+        }
+
+        .receipt-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: white;
+            color: black;
+            font-family: 'Courier New', monospace;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .receipt-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .receipt-header p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        .receipt-section {
+            margin-bottom: 15px;
+        }
+
+        .receipt-section-title {
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .receipt-label {
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        .receipt-value {
+            flex: 1;
+            text-align: right;
+        }
+
+        .receipt-separator {
+            border-top: 2px solid #000;
+            margin: 15px 0;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #000;
+        }
+
+        /* Signature Indicator */
+        .signature-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .signature-status.pending {
+            background: rgba(255, 100, 100, 0.2);
+            color: #ff6464;
+        }
+
+        .signature-status.done {
+            background: rgba(50, 200, 100, 0.2);
+            color: #32c864;
+        }
+
+        .signature-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .signature-status.pending .signature-status-dot {
+            background: #ff6464;
+            animation: blink 1s infinite;
+        }
+
+        .signature-status.done .signature-status-dot {
+            background: #32c864;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .sidebar.collapsed {
+                left: -240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 15px;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .burger-menu.show {
+                display: flex;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .device-type-group {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Burger Menu Button -->
+    <button class="burger-menu" id="burgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">📋</span>
+            <h2>RNC</h2>
+            <p>Job Order Form</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/technician-dashboard" class="menu-link"><span class="menu-icon">🏠</span> Dashboard</a></li>
+            <li><a id="menu-job-form" class="menu-link active"><span class="menu-icon">📋</span> Job Order Form</a></li>
+            <li><a id="menu-submitted" class="menu-link"><span class="menu-icon">📝</span> Submitted Orders</a></li>
+            <li><a href="/logout" class="menu-link"><span class="menu-icon">🚪</span> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div>
+                <span class="header-icon">📋</span>
+                <h1>Job Order Form</h1>
+            </div>
+        </div>
+
+        <!-- Job Order Form -->
+        <form class="form-container" id="jobOrderForm" onsubmit="handleFormSubmit(event)">
+            <!-- Customer Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">👤 Customer Information</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name <span class="required">*</span></label>
+                        <input type="text" id="customerName" name="customerName" placeholder="Enter customer full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerNumber">Customer Number <span class="required">*</span></label>
+                        <input type="tel" id="customerNumber" name="customerNumber" placeholder="Enter contact number" required>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="customerAddress">Customer Address <span class="required">*</span></label>
+                        <input type="text" id="customerAddress" name="customerAddress" placeholder="Enter complete address" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">💻 Device Information</h3>
+
+                <div class="form-group">
+                    <label>Type of Device <span class="required">*</span></label>
+                    <div class="device-type-group">
+                        <label class="radio-label">
+                            <input type="radio" name="deviceType" value="Laptop" required onchange="updateProblems(); updateAccessories();">
+                            <span>💻 Laptop</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="deviceType" value="Desktop" onchange="updateProblems(); updateAccessories();">
+                            <span>🖥️ Desktop</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="brandModel">Brand & Model <span class="required">*</span></label>
+                        <input type="text" id="brandModel" name="brandModel" placeholder="e.g., Dell Inspiron 15, HP Pavilion" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="generation">Generation (Optional)</label>
+                        <select id="generation" name="generation">
+                            <option value="">Select Generation...</option>
+                            <option value="1st Gen">1st Gen</option>
+                            <option value="2nd Gen">2nd Gen</option>
+                            <option value="3rd Gen">3rd Gen</option>
+                            <option value="4th Gen">4th Gen</option>
+                            <option value="5th Gen">5th Gen</option>
+                            <option value="6th Gen">6th Gen</option>
+                            <option value="7th Gen">7th Gen</option>
+                            <option value="8th Gen">8th Gen</option>
+                            <option value="10th Gen">10th Gen</option>
+                            <option value="11th Gen">11th Gen</option>
+                            <option value="12th Gen">12th Gen</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Problems Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">⚠️ Problem of Device</h3>
+
+                <label>Select Problem(s) <span class="required">*</span></label>
+                <div class="problem-list" id="problemList">
+                    <!-- Problems will be populated dynamically -->
+                </div>
+
+                <div class="custom-problem-input">
+                    <input type="text" id="customProblem" placeholder="Enter custom problem if not listed...">
+                    <button type="button" onclick="addCustomProblem()">Add Problem</button>
+                </div>
+
+                <div class="selected-problems" id="selectedProblems">
+                    <!-- Selected problems will be displayed here -->
+                </div>
+                <input type="hidden" id="selectedProblemsData" name="selectedProblems" required>
+            </div>
+
+            <!-- Accessories Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">🔧 Accessories/Items Brought</h3>
+
+                <label>Select Accessories <span class="required">*</span></label>
+                <div class="problem-list" id="accessoriesList">
+                    <!-- Accessories will be populated dynamically -->
+                </div>
+
+                <div class="custom-problem-input">
+                    <input type="text" id="customAccessory" placeholder="Enter custom accessory if not listed...">
+                    <button type="button" onclick="addCustomAccessory()">Add Accessory</button>
+                </div>
+
+                <div class="selected-problems" id="selectedAccessories">
+                    <!-- Selected accessories will be displayed here -->
+                </div>
+                <input type="hidden" id="selectedAccessoriesData" name="selectedAccessories" required>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">✍️ Customer Digital Signature <span class="required">*</span></h3>
+                <p style="color: rgba(255, 200, 100, 0.9); margin-bottom: 15px; font-size: 0.95em; font-weight: 500;">⚠️ REQUIRED: Please sign below with your mouse/touch to confirm receipt of this job order form.</p>
+                <div class="signature-container">
+                    <canvas id="signaturePad" width="400" height="150" style="border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 8px; background: rgba(0, 0, 0, 0.2);"></canvas>
+                    <div class="signature-controls">
+                        <button type="button" onclick="clearSignature()">Clear Signature</button>
+                    </div>
+                </div>
+                <div class="signature-status pending" id="signatureStatus">
+                    <span class="signature-status-dot"></span>
+                    <span>⚠️ Signature Required</span>
+                </div>
+                <input type="hidden" id="signatureData" name="signature">
+            </div>
+
+            <!-- Terms and Conditions Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">📜 Terms and Conditions</h3>
+                <div class="terms-container">
+                    <h4>R and C Computer Laptop Repair Services - Terms and Conditions</h4>
+                    <ol>
+                        <li><strong>Liability Disclaimer:</strong> R and C Computer Laptop Repair Services shall not be liable for the damage on items in case of fire, earthquake, flood, and other similar natural calamities.</li>
+                        
+                        <li><strong>Item Release:</strong> Above listed items shall not be released without the presentation of this Job Order Form.</li>
+                        
+                        <li><strong>Unclaimed Units Policy:</strong> R and C Computer and Laptop Repair services has the right to sell unclaimed units 30 Days after notification and confirmation of completion of this job order.</li>
+                        
+                        <li><strong>Storage Fee:</strong> R and C Computer and Laptop Repair Services shall charge the storage fee of P10 per day 15 days after notification of completion of this job order.</li>
+                        
+                        <li><strong>Loss of Job Order:</strong> The Loss Job Order should be reported immediately. R and C Computer and Laptop Repair Services shall in no way to be held liable for any loss or damaged suffered consequent to the loss of Job Order Form.</li>
+                    </ol>
+                </div>
+
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="termsAccepted" name="termsAccepted" required>
+                    <label for="termsAccepted">I agree to the terms and conditions stated above and acknowledge that I have read and understood the policies of R and C Computer Laptop Repair Services.</label>
+                </div>
+            </div>
+
+            <!-- Form Submission Buttons -->
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-submit">Submit Job Order</button>
+                <button type="reset" class="btn btn-reset" onclick="resetForm()">Clear Form</button>
+            </div>
+        </form>
+
+        <!-- Submitted Job Orders Section -->
+        <div id="submitted-orders" class="content-section">
+            <div class="table-container">
+                <h2>📝 Submitted Job Orders</h2>
+                <div class="table-wrapper">
+                    <table id="jobOrdersTable">
+                        <thead>
+                            <tr>
+                                <th>Job Order #</th>
+                                <th>Customer Name</th>
+                                <th>Device Type</th>
+                                <th>Brand & Model</th>
+                                <th>Problems</th>
+                                <th>Accessories</th>
+                                <th>Submitted Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobOrdersBody">
+                            <tr>
+                                <td colspan="9" class="empty-message">No submitted job orders yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Job Order Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📋 Job Order Details</h2>
+                <button class="modal-close" onclick="closeViewModal()">×</button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Content will be populated dynamically -->
+            </div>
+            <div class="status-update-section">
+                <label>Update Status:</label>
+                <div class="status-options">
+                    <button class="status-option status-submitted" onclick="setStatus('Request Submitted')">📥 Request Submitted</button>
+                    <button class="status-option status-diagnostic" onclick="setStatus('Diagnostic')">🔍 Diagnostic</button>
+                    <button class="status-option status-pending" onclick="setStatus('Pending')">⏳ Pending</button>
+                    <button class="status-option status-inprogress" onclick="setStatus('In Progress')">⚙️ In Progress</button>
+                    <button class="status-option status-checking" onclick="setStatus('Checking')">✓ Checking</button>
+                    <button class="status-option status-completed" onclick="setStatus('Completed')">✅ Completed</button>
+                </div>
+                <div class="status-progress">
+                    <div class="status-progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="generateJobOrderPDF()">📥 Download PDF</button>
+                <button class="btn-modal-cancel" onclick="closeViewModal()">Close</button>
+                <button class="btn-modal-confirm" onclick="saveStatusUpdate()">Save Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Job Order Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🗑️ Delete Job Order</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="job-detail-item">
+                    <span class="job-detail-label">⚠️ Confirmation Required</span>
+                </div>
+                <div style="margin-top: 20px; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                    <p>Are you sure you want to delete this job order?</p>
+                    <p style="font-size: 0.9em; color: rgba(255, 100, 100, 0.8); margin-top: 15px;">
+                        <strong>Job Order ID:</strong> <span id="deleteJobOrderId"></span>
+                    </p>
+                    <p style="font-size: 0.85em; color: rgba(255, 100, 100, 0.6); margin-top: 10px;">
+                        This action cannot be undone.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-modal-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for modals
+        let currentJobOrderIndex = null;
+        let currentStatus = 'Request Submitted';
+        // Device problems based on type
+        const deviceProblems = {
+            'Laptop': [
+                'Screen/Display Issues',
+                'Keyboard Problems',
+                'Battery Not Charging',
+                'Overheating',
+                'Slow Performance',
+                'Hard Drive Issues',
+                'RAM Upgrade Needed',
+                'Motherboard Problem',
+                'Fan Noise',
+                'Trackpad Issues',
+                'Port/Connector Damage'
+            ],
+            'Desktop': [
+                'Monitor Not Working',
+                'Keyboard/Mouse Issues',
+                'Power Supply Problem',
+                'Overheating',
+                'Slow Performance',
+                'Hard Drive Issues',
+                'RAM Problem',
+                'Motherboard Issue',
+                'Graphics Card Problem',
+                'Speaker Issues',
+                'USB Port Damage'
+            ]
+        };
+
+        // Common accessories for devices
+        const deviceAccessories = {
+            'Laptop': [
+                'Charger',
+                'Power Cable',
+                'Mouse',
+                'Keyboard',
+                'Laptop Case/Bag',
+                'USB Hub',
+                'HDMI Cable',
+                'Hard Drive',
+                'RAM Module',
+                'Battery'
+            ],
+            'Desktop': [
+                'Power Cable',
+                'Monitor Cable',
+                'Mouse',
+                'Keyboard',
+                'USB Cable',
+                'HDMI Cable',
+                'Hard Drive',
+                'RAM Module',
+                'Graphics Card',
+                'Cooling Fan'
+            ]
+        };
+
+        let selectedProblems = [];
+        let selectedAccessories = [];
+        let signatureDrawn = false;  // Track if signature has been drawn
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 25;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (4 + Math.random() * 3) + 's';
+            
+            const size = 3 + Math.random() * 6;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Burger Menu Toggle
+        const burgerMenu = document.getElementById('burgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 768) {
+                burgerMenu.classList.add('show');
+            } else {
+                burgerMenu.classList.remove('show');
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            burgerMenu.classList.add('show');
+        }
+
+        burgerMenu.addEventListener('click', () => {
+            burgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+
+        // Initialize problem list
+        function updateProblems() {
+            const deviceType = document.querySelector('input[name="deviceType"]:checked')?.value;
+            const problemList = document.getElementById('problemList');
+            problemList.innerHTML = '';
+            selectedProblems = [];
+            updateSelectedProblemsDisplay();
+
+            if (deviceType && deviceProblems[deviceType]) {
+                deviceProblems[deviceType].forEach((problem, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'problem-item';
+                    div.innerHTML = `
+                        <input type="checkbox" id="problem-${index}" value="${problem}" onchange="toggleProblem('${problem}')">
+                        <label for="problem-${index}">${problem}</label>
+                    `;
+                    problemList.appendChild(div);
+                });
+            }
+        }
+
+        // Initialize accessories list
+        function updateAccessories() {
+            const deviceType = document.querySelector('input[name="deviceType"]:checked')?.value;
+            const accessoriesList = document.getElementById('accessoriesList');
+            accessoriesList.innerHTML = '';
+            selectedAccessories = [];
+            updateSelectedAccessoriesDisplay();
+
+            if (deviceType && deviceAccessories[deviceType]) {
+                deviceAccessories[deviceType].forEach((accessory, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'problem-item';
+                    div.innerHTML = `
+                        <input type="checkbox" id="accessory-${index}" value="${accessory}" onchange="toggleAccessory('${accessory}')">
+                        <label for="accessory-${index}">${accessory}</label>
+                    `;
+                    accessoriesList.appendChild(div);
+                });
+            }
+        }
+
+        function toggleProblem(problem) {
+            const index = selectedProblems.indexOf(problem);
+            if (index > -1) {
+                selectedProblems.splice(index, 1);
+            } else {
+                selectedProblems.push(problem);
+            }
+            updateSelectedProblemsDisplay();
+        }
+
+        function addCustomProblem() {
+            const input = document.getElementById('customProblem');
+            const problem = input.value.trim();
+
+            if (problem) {
+                if (!selectedProblems.includes(problem)) {
+                    selectedProblems.push(problem);
+                    updateSelectedProblemsDisplay();
+                    input.value = '';
+                } else {
+                    showNotification('This problem is already added.', 'error');
+                }
+            } else {
+                showNotification('Please enter a problem description.', 'error');
+            }
+        }
+
+        function updateSelectedProblemsDisplay() {
+            const container = document.getElementById('selectedProblems');
+            container.innerHTML = '';
+
+            selectedProblems.forEach(problem => {
+                const tag = document.createElement('div');
+                tag.className = 'problem-tag';
+                tag.innerHTML = `
+                    ${problem}
+                    <button type="button" onclick="removeProblem('${problem}')" title="Remove">×</button>
+                `;
+                container.appendChild(tag);
+            });
+
+            document.getElementById('selectedProblemsData').value = JSON.stringify(selectedProblems);
+        }
+
+        function removeProblem(problem) {
+            const index = selectedProblems.indexOf(problem);
+            if (index > -1) {
+                selectedProblems.splice(index, 1);
+            }
+            updateSelectedProblemsDisplay();
+        }
+
+        function toggleAccessory(accessory) {
+            const index = selectedAccessories.indexOf(accessory);
+            if (index > -1) {
+                selectedAccessories.splice(index, 1);
+            } else {
+                selectedAccessories.push(accessory);
+            }
+            updateSelectedAccessoriesDisplay();
+        }
+
+        function addCustomAccessory() {
+            const input = document.getElementById('customAccessory');
+            const accessory = input.value.trim();
+
+            if (accessory) {
+                if (!selectedAccessories.includes(accessory)) {
+                    selectedAccessories.push(accessory);
+                    updateSelectedAccessoriesDisplay();
+                    input.value = '';
+                } else {
+                    showNotification('This accessory is already added.', 'error');
+                }
+            } else {
+                showNotification('Please enter an accessory description.', 'error');
+            }
+        }
+
+        function updateSelectedAccessoriesDisplay() {
+            const container = document.getElementById('selectedAccessories');
+            container.innerHTML = '';
+
+            selectedAccessories.forEach(accessory => {
+                const tag = document.createElement('div');
+                tag.className = 'problem-tag';
+                tag.innerHTML = `
+                    ${accessory}
+                    <button type="button" onclick="removeAccessory('${accessory}')" title="Remove">×</button>
+                `;
+                container.appendChild(tag);
+            });
+
+            document.getElementById('selectedAccessoriesData').value = JSON.stringify(selectedAccessories);
+        }
+
+        function removeAccessory(accessory) {
+            const index = selectedAccessories.indexOf(accessory);
+            if (index > -1) {
+                selectedAccessories.splice(index, 1);
+            }
+            updateSelectedAccessoriesDisplay();
+        }
+
+        // Signature Pad
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            signatureDrawn = true;
+            ctx.beginPath();
+            const rect = canvas.getBoundingClientRect();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            updateSignatureStatus();
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.strokeStyle = '#23a6d5';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                signatureDrawn = true;  // Mark signature as drawn
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        // Touch support for mobile/tablet devices
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isDrawing = true;
+            signatureDrawn = true;
+            ctx.beginPath();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            updateSignatureStatus();
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isDrawing) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.strokeStyle = '#23a6d5';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                signatureDrawn = true;  // Mark signature as drawn
+            }
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isDrawing = false;
+        });
+
+        // Function to save canvas signature to hidden input
+        function captureSignature() {
+            const canvas = document.getElementById('signaturePad');
+            const signatureData = canvas.toDataURL('image/png');
+            document.getElementById('signatureData').value = signatureData;
+            return signatureData;
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('signatureData').value = '';
+            signatureDrawn = false;  // Reset the flag when clearing
+            updateSignatureStatus();
+        }
+
+        function updateSignatureStatus() {
+            const statusDiv = document.getElementById('signatureStatus');
+            if (signatureDrawn) {
+                statusDiv.classList.remove('pending');
+                statusDiv.classList.add('done');
+                statusDiv.innerHTML = '<span class="signature-status-dot"></span><span>✓ Signature Provided</span>';
+            } else {
+                statusDiv.classList.remove('done');
+                statusDiv.classList.add('pending');
+                statusDiv.innerHTML = '<span class="signature-status-dot"></span><span>⚠️ Signature Required</span>';
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Validate device type selection
+            if (!document.querySelector('input[name="deviceType"]:checked')) {
+                showNotification('Please select a device type.', 'error');
+                return;
+            }
+
+            // Validate problems
+            if (selectedProblems.length === 0) {
+                showNotification('Please select at least one problem.', 'error');
+                return;
+            }
+
+            // Validate accessories
+            if (selectedAccessories.length === 0) {
+                showNotification('Please select at least one accessory/item brought with the device.', 'error');
+                return;
+            }
+
+            // STRICT Digital Signature Validation - Must be drawn
+            if (!signatureDrawn) {
+                showNotification('⚠️ DIGITAL SIGNATURE IS REQUIRED! Please sign in the signature pad before submitting.', 'error');
+                return;
+            }
+
+            // Capture signature from canvas before validation
+            const signature = captureSignature();
+
+            // Double-check signature exists and is valid
+            if (!signature || signature.length < 100) {
+                showNotification('⚠️ DIGITAL SIGNATURE IS REQUIRED! Please provide a complete signature.', 'error');
+                return;
+            }
+
+            // Collect form data
+            const formElement = document.getElementById('jobOrderForm');
+            const data = {
+                customerName: document.getElementById('customerName').value,
+                customerNumber: document.getElementById('customerNumber').value,
+                customerAddress: document.getElementById('customerAddress').value,
+                deviceType: document.querySelector('input[name="deviceType"]:checked').value,
+                brandModel: document.getElementById('brandModel').value,
+                generation: document.getElementById('generation').value || '',
+                selectedProblems: selectedProblems,
+                selectedAccessories: selectedAccessories,
+                signature: signature
+            };
+
+            // Submit to backend API
+            saveJobOrder(data);
+        }
+
+        function saveJobOrder(data) {
+            console.log('Sending data:', data);
+            console.log('Selected accessories:', data.selectedAccessories);
+            console.log('Accessories count:', data.selectedAccessories ? data.selectedAccessories.length : 0);
+
+            fetch('/api/job-orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log('Server response:', result);
+                console.log('Server returned accessories:', result.jobOrder?.accessories);
+                if (result.success) {
+                    console.log('Job Order submitted:', result);
+                    showNotification('Job Order Form submitted successfully!', 'success');
+                    
+                    // Reset form and refresh submitted orders
+                    setTimeout(() => {
+                        resetForm();
+                        loadJobOrders();
+                    }, 500);
+                } else {
+                    showNotification(result.message || 'Error submitting job order', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error submitting job order: ' + error.message, 'error');
+            });
+        }
+
+        function loadJobOrders() {
+            fetch('/api/job-orders')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const jobOrders = result.jobOrders || [];
+                        const tbody = document.getElementById('jobOrdersBody');
+                        
+                        if (jobOrders.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="9" class="empty-message">No submitted job orders yet.</td></tr>';
+                            return;
+                        }
+
+                        tbody.innerHTML = '';
+                        jobOrders.forEach((order) => {
+                            const row = document.createElement('tr');
+                            const problemsText = Array.isArray(order.selectedProblems) 
+                                ? order.selectedProblems.slice(0, 2).join(', ') + (order.selectedProblems.length > 2 ? '...' : '')
+                                : order.selectedProblems;
+                            
+                            // Better accessories handling with null/undefined checks
+                            let accessoriesDisplay = 'N/A';
+                            let accessoriesFull = 'N/A';
+                            if (Array.isArray(order.selectedAccessories) && order.selectedAccessories.length > 0) {
+                                const accList = order.selectedAccessories.join(', ');
+                                accessoriesFull = accList;
+                                accessoriesDisplay = accList.length > 30 ? accList.substring(0, 30) + '...' : accList;
+                            }
+                            console.log('Order ID:', order.id, 'Accessories Raw:', order.selectedAccessories, 'Accessories Display:', accessoriesFull);
+const submittedDate = order.submittedDate || 'N/A';
+
+                            row.innerHTML = `
+                                <td>${order.id}</td>
+                                <td>${order.customerName}</td>
+                                <td>${order.deviceType}</td>
+                                <td>${order.brandModel}</td>
+                                <td title="${Array.isArray(order.selectedProblems) ? order.selectedProblems.join(', ') : order.selectedProblems}">${problemsText}</td>
+                                <td title="${accessoriesFull}">${accessoriesDisplay}</td>
+                                <td>${submittedDate}</td>
+                                <td><span class="status-badge" data-status="${order.status}">${order.status}</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-view" onclick="viewJobOrder('${order.id}')">View</button>
+                                        <button class="btn-delete" onclick="deleteJobOrder('${order.id}')">Delete</button>
+                                    </div>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Error loading job orders:', result.message);
+                        const tbody = document.getElementById('jobOrdersBody');
+                        tbody.innerHTML = '<tr><td colspan="9" class="empty-message">Error loading job orders</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching job orders:', error);
+                    const tbody = document.getElementById('jobOrdersBody');
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-message">Error loading job orders</td></tr>';
+                });
+        }
+
+        function deleteJobOrder(jobOrderId) {
+            currentJobOrderIndex = jobOrderId;
+            document.getElementById('deleteJobOrderId').textContent = jobOrderId;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function viewJobOrder(jobOrderId) {
+            currentJobOrderIndex = jobOrderId;
+            
+            // Fetch the job order details from the API
+            fetch(`/api/job-orders/${jobOrderId}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const order = result.jobOrder;
+                        console.log('Modal Order Data:', order);
+                        console.log('Modal Accessories:', order.selectedAccessories);
+                        currentStatus = order.status || 'Request Submitted';
+                        
+                        let problemsList = '';
+                        if (Array.isArray(order.selectedProblems)) {
+                            problemsList = order.selectedProblems.map(p => `<li>${p}</li>`).join('');
+                        } else {
+                            problemsList = `<li>${order.selectedProblems}</li>`;
+                        }
+
+                        let accessoriesList = '';
+                        if (Array.isArray(order.selectedAccessories) && order.selectedAccessories.length > 0) {
+                            accessoriesList = order.selectedAccessories.map(a => `<li>${a}</li>`).join('');
+                        } else {
+                            accessoriesList = '<li>No accessories listed</li>';
+                        }
+                        
+const submittedDate = order.submittedDate || 'N/A';
+
+                        const modalBody = document.getElementById('viewModalBody');
+                        modalBody.innerHTML = `
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Job Order ID:</span>
+                                <span class="job-detail-value">${order.id}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Customer Name:</span>
+                                <span class="job-detail-value">${order.customerName}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Phone Number:</span>
+                                <span class="job-detail-value">${order.customerNumber}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Address:</span>
+                                <span class="job-detail-value">${order.customerAddress}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Device Type:</span>
+                                <span class="job-detail-value">${order.deviceType}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Brand & Model:</span>
+                                <span class="job-detail-value">${order.brandModel}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Generation:</span>
+                                <span class="job-detail-value">${order.generation || 'N/A'}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Problems:</span>
+                            </div>
+                            <div class="problems-list">
+                                <ul>
+                                    ${problemsList}
+                                </ul>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Accessories:</span>
+                            </div>
+                            <div class="problems-list">
+                                <ul>
+                                    ${accessoriesList}
+                                </ul>
+                            </div>
+<div class="job-detail-item">
+                                <span class="job-detail-label">Submitted Date:</span>
+                                <span class="job-detail-value">${submittedDate}</span>
+                            </div>
+                            <div class="job-detail-item">
+                                <span class="job-detail-label">Current Status:</span>
+                                <span class="job-detail-value">${order.status}</span>
+                            </div>
+                        `;
+                        
+                        updateStatusButtons();
+                        document.getElementById('viewModal').classList.add('active');
+                    } else {
+                        showNotification('Error loading job order: ' + result.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading job order: ' + error.message, 'error');
+                });
+        }
+
+        function updateStatusButtons() {
+            const statusButtons = document.querySelectorAll('.status-option');
+            statusButtons.forEach(btn => {
+                btn.classList.remove('active');
+                const status = btn.textContent.trim().substring(2).trim();
+                if (status === currentStatus) {
+                    btn.classList.add('active');
+                    updateProgressBar(currentStatus);
+                }
+            });
+        }
+
+        function setStatus(status) {
+            currentStatus = status;
+            updateStatusButtons();
+        }
+
+        function updateProgressBar(status) {
+            const progressBar = document.getElementById('progressBar');
+            let progress = 0;
+
+            switch (status) {
+                case 'Request Submitted':
+                    progress = 16.66;
+                    break;
+                case 'Diagnostic':
+                    progress = 33.33;
+                    break;
+                case 'Pending':
+                    progress = 50;
+                    break;
+                case 'In Progress':
+                    progress = 66.66;
+                    break;
+                case 'Checking':
+                    progress = 83.33;
+                    break;
+                case 'Completed':
+                    progress = 100;
+                    break;
+            }
+
+            progressBar.style.width = progress + '%';
+
+            // Change gradient color based on status
+            let gradientColor = 'linear-gradient(90deg, #667eea, #764ba2)';
+            switch (status) {
+                case 'Request Submitted':
+                    gradientColor = 'linear-gradient(90deg, #6496c8, #5a85b8)';
+                    break;
+                case 'Diagnostic':
+                    gradientColor = 'linear-gradient(90deg, #fac814, #f0b800)';
+                    break;
+                case 'Pending':
+                    gradientColor = 'linear-gradient(90deg, #ff9600, #e68a00)';
+                    break;
+                case 'In Progress':
+                    gradientColor = 'linear-gradient(90deg, #23a6d5, #1e8fb5)';
+                    break;
+                case 'Checking':
+                    gradientColor = 'linear-gradient(90deg, #f702a8, #d60294)';
+                    break;
+                case 'Completed':
+                    gradientColor = 'linear-gradient(90deg, #226432, #1a4d26)';
+                    break;
+            }
+
+            progressBar.style.background = gradientColor;
+        }
+
+        function saveStatusUpdate() {
+            if (currentJobOrderIndex === null) {
+                showNotification('Error: No job order selected', 'error');
+                return;
+            }
+
+            const jobOrderId = currentJobOrderIndex;
+            
+            fetch(`/api/job-orders/${jobOrderId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: currentStatus })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    loadJobOrders();
+                    closeViewModal();
+                    showNotification(`Status updated to "${currentStatus}"!`, 'success');
+                } else {
+                    showNotification('Error updating status: ' + result.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error updating status: ' + error.message, 'error');
+            });
+        }
+
+        function confirmDelete() {
+            if (currentJobOrderIndex === null) {
+                showNotification('Error: No job order selected', 'error');
+                return;
+            }
+
+            const jobOrderId = currentJobOrderIndex;
+            
+            fetch(`/api/job-orders/${jobOrderId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    loadJobOrders();
+                    closeDeleteModal();
+                    showNotification(`Job Order ${jobOrderId} deleted successfully.`, 'success');
+                } else {
+                    showNotification('Error deleting job order: ' + result.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error deleting job order: ' + error.message, 'error');
+            });
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+            currentJobOrderIndex = null;
+        }
+
+        function generateJobOrderPDF() {
+            if (!currentJobOrderIndex) {
+                showNotification('Error: No job order selected', 'error');
+                return;
+            }
+
+            // Fetch the latest job order data
+            fetch(`/api/job-orders/${currentJobOrderIndex}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const order = result.jobOrder;
+                        console.log('PDF Order Data:', order);
+                        console.log('PDF Accessories:', order.selectedAccessories);
+                        
+                        // Create PDF content
+                        const pdfContent = `
+                            <div class="receipt-container">
+                                <div class="receipt-header">
+                                    <h1>R AND C COMPUTER</h1>
+                                    <p>LAPTOP REPAIR SERVICES</p>
+                                    <p>Job Order Receipt</p>
+                                </div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">JOB ORDER INFORMATION</div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Job Order #:</span>
+                                        <span class="receipt-value">${order.id}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Date Submitted:</span>
+                                        <span class="receipt-value">${order.submittedDate || 'N/A'}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Status:</span>
+                                        <span class="receipt-value">${order.status}</span>
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">CUSTOMER INFORMATION</div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Customer Name:</span>
+                                        <span class="receipt-value">${order.customerName}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Phone Number:</span>
+                                        <span class="receipt-value">${order.customerNumber}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Address:</span>
+                                        <span class="receipt-value">${order.customerAddress}</span>
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">DEVICE INFORMATION</div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Device Type:</span>
+                                        <span class="receipt-value">${order.deviceType}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Brand & Model:</span>
+                                        <span class="receipt-value">${order.brandModel}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Generation:</span>
+                                        <span class="receipt-value">${order.generation || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">PROBLEMS REPORTED</div>
+                                    <div style="padding-left: 20px;">
+                                        ${Array.isArray(order.selectedProblems) ? order.selectedProblems.map(p => '<div style="font-size: 12px; margin-bottom: 4px;">• ' + p + '</div>').join('') : '<div style="font-size: 12px;">' + order.selectedProblems + '</div>'}
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">ACCESSORIES/ITEMS BROUGHT</div>
+                                    <div style="padding-left: 20px;">
+                                        ${Array.isArray(order.selectedAccessories) && order.selectedAccessories.length > 0 ? order.selectedAccessories.map(a => '<div style="font-size: 12px; margin-bottom: 4px;">• ' + a + '</div>').join('') : '<div style="font-size: 12px;">No accessories listed</div>'}
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">DIGITAL SIGNATURE</div>
+                                    <div style="text-align: center; margin: 15px 0;">
+                                        ${order.signature && order.signature.length > 100 ? '<img src="' + order.signature + '" style="max-width: 300px; max-height: 100px; border: 1px solid #000;" />' : '<div style="font-size: 12px; color: #666;">Signature image not available</div>'}
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-section">
+                                    <div class="receipt-section-title">TECHNICIAN INFORMATION</div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Technician:</span>
+                                        <span class="receipt-value">${order.technicianName}</span>
+                                    </div>
+                                    <div class="receipt-row">
+                                        <span class="receipt-label">Email:</span>
+                                        <span class="receipt-value">${order.technicianEmail}</span>
+                                    </div>
+                                </div>
+
+                                <div class="receipt-separator"></div>
+
+                                <div class="receipt-footer">
+                                    <p>Thank you for choosing R AND C COMPUTER LAPTOP REPAIR SERVICES</p>
+                                    <p>Please keep this receipt for your records</p>
+                                    <p style="margin-top: 10px; font-weight: bold;">Receipt Generated: ${new Date().toLocaleString('en-PH')}</p>
+                                </div>
+                            </div>
+                        `;
+
+                        // Generate PDF using html2pdf
+                        const element = document.createElement('div');
+                        element.innerHTML = pdfContent;
+                        
+                        const opt = {
+                            margin: 10,
+                            filename: `Job_Order_${order.id}.pdf`,
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+                        };
+
+                        html2pdf().set(opt).from(element).save();
+                        showNotification('PDF downloaded successfully!', 'success');
+                    } else {
+                        showNotification('Error generating PDF: ' + result.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error generating PDF: ' + error.message, 'error');
+                });
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            currentJobOrderIndex = null;
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'viewModal') {
+                closeViewModal();
+            }
+            if (e.target.id === 'deleteModal') {
+                closeDeleteModal();
+            }
+        });
+
+        function resetForm() {
+            document.getElementById('jobOrderForm').reset();
+            selectedProblems = [];
+            selectedAccessories = [];
+            updateSelectedProblemsDisplay();
+            updateSelectedAccessoriesDisplay();
+            signatureDrawn = false;  // Reset signature flag
+            
+            // Safely clear signature
+            const canvas = document.getElementById('signaturePad');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('signatureData').value = '';
+            }
+
+            // Clear custom accessory input
+            const customAccessoryInput = document.getElementById('customAccessory');
+            if (customAccessoryInput) {
+                customAccessoryInput.value = '';
+            }
+            
+            updateSignatureStatus();
+        }
+
+        // Show Notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Call updateProblems when page loads to ensure form is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load submitted job orders
+            loadJobOrders();
+            
+            // Menu navigation
+            document.getElementById('menu-job-form').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('job-order-form');
+            });
+
+            document.getElementById('menu-submitted').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('submitted-orders');
+            });
+        });
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.form-container, #submitted-orders');
+            sections.forEach(section => section.style.display = 'none');
+            
+            // Remove active class from all menu items
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => link.classList.remove('active'));
+            
+            // Show selected section
+            if (sectionId === 'job-order-form') {
+                document.querySelector('.form-container').style.display = 'block';
+                document.getElementById('menu-job-form').classList.add('active');
+            } else if (sectionId === 'submitted-orders') {
+                document.getElementById('submitted-orders').style.display = 'block';
+                document.getElementById('menu-submitted').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

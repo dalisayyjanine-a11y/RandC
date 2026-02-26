@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Orders Management - RNC System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        /* Enhanced Animated Background with Intense Glow */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.25;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ultra Glow Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.5) 0%, transparent 70%);
+            top: -50px;
+            left: -50px;
+        }
+
+        .glow-orb-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.5) 0%, transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-80px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            min-height: 100vh;
+            padding: 25px 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            left: -280px;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header .logo {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+            animation: bounce 2s ease-in-out infinite, iconGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes iconGlow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); }
+            to { filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.9)); }
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.6em;
+            color: white;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 25px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #23a6d5;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .sidebar-menu li a.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border-left-color: #f702a8;
+            text-shadow: 0 0 15px rgba(247, 2, 168, 0.5);
+        }
+
+        .menu-icon {
+            font-size: 1.3em;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 25px;
+            transition: margin 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.15);
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            margin-bottom: 25px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-title {
+            color: #23a6d5;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(35, 166, 213, 0.5);
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 12px 18px;
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px currentColor;
+        }
+
+        .filter-btn-all {
+            border-color: rgba(102, 126, 234, 0.5);
+            color: #667eea;
+        }
+
+        .filter-btn-all.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .filter-btn-submitted {
+            border-color: rgba(100, 150, 200, 0.5);
+            color: #6496c8;
+        }
+
+        .filter-btn-submitted.active {
+            background: rgba(100, 150, 200, 0.3);
+            border-color: #6496c8;
+        }
+
+        .filter-btn-diagnostic {
+            border-color: rgba(250, 200, 20, 0.5);
+            color: #fac814;
+        }
+
+        .filter-btn-diagnostic.active {
+            background: rgba(250, 200, 20, 0.3);
+            border-color: #fac814;
+        }
+
+        .filter-btn-pending {
+            border-color: rgba(255, 150, 0, 0.5);
+            color: #ff9600;
+        }
+
+        .filter-btn-pending.active {
+            background: rgba(255, 150, 0, 0.3);
+            border-color: #ff9600;
+        }
+
+        .filter-btn-progress {
+            border-color: rgba(35, 166, 213, 0.5);
+            color: #23a6d5;
+        }
+
+        .filter-btn-progress.active {
+            background: rgba(35, 166, 213, 0.3);
+            border-color: #23a6d5;
+        }
+
+        .filter-btn-checking {
+            border-color: rgba(247, 2, 168, 0.5);
+            color: #f702a8;
+        }
+
+        .filter-btn-checking.active {
+            background: rgba(247, 2, 168, 0.3);
+            border-color: #f702a8;
+        }
+
+        .filter-btn-completed {
+            border-color: rgba(34, 100, 50, 0.5);
+            color: #226432;
+        }
+
+        .filter-btn-completed.active {
+            background: rgba(34, 100, 50, 0.3);
+            border-color: #226432;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+            overflow-x: auto;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-bottom: 2px solid rgba(35, 166, 213, 0.3);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            color: #23a6d5;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-bottom-color: rgba(35, 166, 213, 0.3);
+        }
+
+        td {
+            padding: 14px 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-badge {
+            background: rgba(100, 150, 200, 0.2);
+            color: #6496c8;
+            border-color: rgba(100, 150, 200, 0.5);
+        }
+
+        .status-badge[data-status="Diagnostic"] {
+            background: rgba(250, 200, 20, 0.2);
+            color: #fac814;
+            border-color: rgba(250, 200, 20, 0.5);
+        }
+
+        .status-badge[data-status="Pending"] {
+            background: rgba(255, 150, 0, 0.2);
+            color: #ff9600;
+            border-color: rgba(255, 150, 0, 0.5);
+        }
+
+        .status-badge[data-status="In Progress"] {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border-color: rgba(35, 166, 213, 0.5);
+        }
+
+        .status-badge[data-status="Checking"] {
+            background: rgba(247, 2, 168, 0.2);
+            color: #f702a8;
+            border-color: rgba(247, 2, 168, 0.5);
+        }
+
+        .status-badge[data-status="Completed"] {
+            background: rgba(34, 100, 50, 0.2);
+            color: #226432;
+            border-color: rgba(34, 100, 50, 0.5);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        .technician-name {
+            color: #23a6d5;
+            font-weight: 600;
+        }
+
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .burger-menu.show {
+            display: flex;
+        }
+
+        .burger-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .burger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .burger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #23a6d5;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .sidebar.collapsed {
+                left: -240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 15px;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .burger-menu.show {
+                display: flex;
+            }
+
+            .filter-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            td, th {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Burger Menu Button -->
+    <button class="burger-menu" id="burgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">👨‍💼</span>
+            <h2>RNC</h2>
+            <p>Admin Panel</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin-dashboard" class="menu-link"><span class="menu-icon">👥</span> Technicians</a></li>
+            <li><a id="menu-job-orders" class="menu-link active"><span class="menu-icon">📋</span> Job Orders</a></li>
+            <li><a href="/logout" class="menu-link"><span class="menu-icon">🚪</span> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <h1>📋 Job Orders Management</h1>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="filter-section">
+            <div class="filter-title">📊 Overview Statistics</div>
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-title">🔍 Filter by Status</div>
+            <div class="filter-buttons">
+                <button class="filter-btn filter-btn-all active" onclick="filterJobs('all')">📊 All Job Orders</button>
+                <button class="filter-btn filter-btn-submitted" onclick="filterJobs('Request Submitted')">📥 Request Submitted</button>
+                <button class="filter-btn filter-btn-diagnostic" onclick="filterJobs('Diagnostic')">🔍 Diagnostic</button>
+                <button class="filter-btn filter-btn-pending" onclick="filterJobs('Pending')">⏳ Pending</button>
+                <button class="filter-btn filter-btn-progress" onclick="filterJobs('In Progress')">⚙️ In Progress</button>
+                <button class="filter-btn filter-btn-checking" onclick="filterJobs('Checking')">✓ Checking</button>
+                <button class="filter-btn filter-btn-completed" onclick="filterJobs('Completed')">✅ Completed</button>
+            </div>
+        </div>
+
+        <!-- Job Orders Table -->
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job Order #</th>
+                            <th>Technician</th>
+                            <th>Customer Name</th>
+                            <th>Device Type</th>
+                            <th>Brand & Model</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobOrdersBody">
+                        <tr>
+                            <td colspan="7" class="empty-message">No job orders found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample job orders (in real app, this would come from server)
+        let allJobOrders = [];
+        let currentFilter = 'all';
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 25;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (4 + Math.random() * 3) + 's';
+            
+            const size = 3 + Math.random() * 6;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Burger Menu Toggle
+        const burgerMenu = document.getElementById('burgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 768) {
+                burgerMenu.classList.add('show');
+            } else {
+                burgerMenu.classList.remove('show');
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            burgerMenu.classList.add('show');
+        }
+
+        burgerMenu.addEventListener('click', () => {
+            burgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+
+        // Load job orders from all technician sessions
+        function loadAllJobOrders() {
+            // In a real application, this would fetch from the server
+            // For now, we'll load data from admin's view of technician job orders
+            
+            // Try to get any stored job orders with technician info
+            const technicians = <%- JSON.stringify(technicians || []) %>;
+            
+            // This is a sample implementation - in production, fetch from server
+            allJobOrders = [
+                // Sample data structure
+            ];
+
+            // Try to load from sessionStorage/localStorage if available
+            const storedOrders = localStorage.getItem('allJobOrders');
+            if (storedOrders) {
+                try {
+                    allJobOrders = JSON.parse(storedOrders);
+                } catch (e) {
+                    console.log('Could not load stored orders');
+                }
+            }
+
+            loadJobOrders();
+        }
+
+        function loadJobOrders() {
+            const tbody = document.getElementById('jobOrdersBody');
+            
+            // Filter jobs based on current filter
+            let filteredJobs = allJobOrders;
+            if (currentFilter !== 'all') {
+                filteredJobs = allJobOrders.filter(job => job.status === currentFilter);
+            }
+
+            if (filteredJobs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-message">No job orders found for this filter.</td></tr>';
+                updateStats();
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filteredJobs.forEach((order) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.jobOrderId}</td>
+                    <td><span class="technician-name">${order.technicianName || 'Unknown'}</span></td>
+                    <td>${order.customerName}</td>
+                    <td>${order.deviceType}</td>
+                    <td>${order.brandModel}</td>
+<td>${order.submittedDate || 'N/A'}</td>
+                    <td><span class="status-badge" data-status="${order.status}">${order.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const stats = {
+                totalOrders: allJobOrders.length,
+                submitted: allJobOrders.filter(j => j.status === 'Request Submitted').length,
+                diagnostic: allJobOrders.filter(j => j.status === 'Diagnostic').length,
+                pending: allJobOrders.filter(j => j.status === 'Pending').length,
+                inProgress: allJobOrders.filter(j => j.status === 'In Progress').length,
+                checking: allJobOrders.filter(j => j.status === 'Checking').length,
+                completed: allJobOrders.filter(j => j.status === 'Completed').length
+            };
+
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.totalOrders}</div>
+                    <div class="stat-label">Total Job Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.submitted}</div>
+                    <div class="stat-label">Request Submitted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.diagnostic}</div>
+                    <div class="stat-label">Diagnostic</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.pending}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.inProgress}</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.checking}</div>
+                    <div class="stat-label">Checking</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.completed}</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            `;
+        }
+
+        function filterJobs(status) {
+            // Update active button
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+
+            if (status === 'all') {
+                document.querySelector('.filter-btn-all').classList.add('active');
+            } else {
+                const btnClass = {
+                    'Request Submitted': 'filter-btn-submitted',
+                    'Diagnostic': 'filter-btn-diagnostic',
+                    'Pending': 'filter-btn-pending',
+                    'In Progress': 'filter-btn-progress',
+                    'Checking': 'filter-btn-checking',
+                    'Completed': 'filter-btn-completed'
+                }[status] || 'filter-btn-all';
+                
+                document.querySelector('.' + btnClass).classList.add('active');
+            }
+
+            currentFilter = status;
+            loadJobOrders();
+        }
+
+        // Fetch job orders from server
+        function fetchJobOrdersFromServer() {
+            // This would call an API endpoint to get all job orders
+            fetch('/api/admin/job-orders')
+                .then(res => res.json())
+                .then(data => {
+                    allJobOrders = data.jobOrders || [];
+                    loadJobOrders();
+                })
+                .catch(err => {
+                    console.log('Could not fetch job orders from server:', err);
+                    loadAllJobOrders();
+                });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Try to fetch from server first
+            fetchJobOrdersFromServer();
+        });
+    </script>
+</body>
+</html>

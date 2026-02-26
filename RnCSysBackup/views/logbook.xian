@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogBook - RNC System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.25;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            color: white;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 15px;
+        }
+
+        .menu-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: block;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: #23a6d5;
+            transform: translateX(5px);
+        }
+
+        .menu-link.active {
+            background: rgba(102, 126, 234, 0.3);
+            color: #23a6d5;
+            border-left: 3px solid #23a6d5;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-container h1 {
+            color: white;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #23a6d5;
+            box-shadow: 0 0 15px rgba(35, 166, 213, 0.3);
+        }
+
+        .items-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .item-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-end;
+        }
+
+        .item-input-group input {
+            flex: 1;
+        }
+
+        .item-input-group button {
+            padding: 12px 20px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .item-input-group button:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .selected-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .item-tag {
+            background: rgba(247, 2, 168, 0.2);
+            color: #f702a8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(247, 2, 168, 0.5);
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .item-tag button {
+            background: none;
+            border: none;
+            color: #f702a8;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .table-container.active {
+            display: block;
+        }
+
+        .table-container h2 {
+            color: white;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-bottom: 2px solid rgba(35, 166, 213, 0.3);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            color: #23a6d5;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(35, 166, 213, 0.1);
+        }
+
+        td {
+            padding: 15px 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-view, .btn-delete {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.5);
+        }
+
+        .btn-view:hover {
+            background: rgba(35, 166, 213, 0.3);
+            box-shadow: 0 0 10px rgba(35, 166, 213, 0.3);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            z-index: 2000;
+            animation: slideInNotification 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes slideInNotification {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        .items-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .items-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .items-list li {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .items-list li:before {
+            content: "• ";
+            color: #23a6d5;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">📚 LogBook</div>
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a class="menu-link active" onclick="showSection('logbook-form')">New Entry</a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" onclick="showSection('logbook-list')">My Entries</a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/technician-dashboard">Back to Dashboard</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- LogBook Form Section -->
+            <div id="logbook-form" class="form-container">
+                <h1>📓 New LogBook Entry</h1>
+                <form id="logbookForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="logbookDate">Date <span class="required">*</span></label>
+                            <input type="date" id="logbookDate" name="logbookDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerName">Customer Name <span class="required">*</span></label>
+                            <input type="text" id="customerName" name="customerName" placeholder="Enter customer name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Items Bought <span class="required">*</span></label>
+                        <div class="items-section">
+                            <div class="item-input-group">
+                                <input type="text" id="itemInput" placeholder="Enter item name...">
+                                <button type="button" onclick="addItem()">Add Item</button>
+                            </div>
+                            <div class="selected-items" id="selectedItems">
+                                <!-- Items will be displayed here -->
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedItemsData" name="itemsBought" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cost">Cost (₱) <span class="required">*</span></label>
+                            <input type="number" id="cost" name="cost" placeholder="Enter total cost" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brandModel">Brand/Model <span class="required">*</span></label>
+                            <input type="text" id="brandModel" name="brandModel" placeholder="e.g., Dell, HP, Lenovo" required>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-submit">Submit Entry</button>
+                        <button type="reset" class="btn btn-reset" onclick="resetForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LogBook List Section -->
+            <div id="logbook-list" class="table-container">
+                <h2>📋 My LogBook Entries</h2>
+                <table id="logbookTable">
+                    <thead>
+                        <tr>
+                            <th>Entry #</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Cost</th>
+                            <th>Brand/Model</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logbookTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">No logbook entries yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- View LogBook Entry Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📖 LogBook Entry Details</h2>
+                <button class="modal-close" onclick="closeViewModal()">×</button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Content will be populated dynamically -->
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <button style="padding: 12px 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.9); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedItems = [];
+        let currentLogbookId = null;
+
+        // Add item to list
+        function addItem() {
+            const input = document.getElementById('itemInput');
+            const item = input.value.trim();
+
+            if (item) {
+                if (!selectedItems.includes(item)) {
+                    selectedItems.push(item);
+                    updateItemsDisplay();
+                    input.value = '';
+                } else {
+                    showNotification('This item is already added.', 'error');
+                }
+            } else {
+                showNotification('Please enter an item name.', 'error');
+            }
+        }
+
+        function updateItemsDisplay() {
+            const container = document.getElementById('selectedItems');
+            container.innerHTML = '';
+
+            selectedItems.forEach(item => {
+                const tag = document.createElement('div');
+                tag.className = 'item-tag';
+                tag.innerHTML = `
+                    ${item}
+                    <button type="button" onclick="removeItem('${item}')" title="Remove">×</button>
+                `;
+                container.appendChild(tag);
+            });
+
+            document.getElementById('selectedItemsData').value = JSON.stringify(selectedItems);
+        }
+
+        function removeItem(item) {
+            const index = selectedItems.indexOf(item);
+            if (index > -1) {
+                selectedItems.splice(index, 1);
+            }
+            updateItemsDisplay();
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            if (selectedItems.length === 0) {
+                showNotification('Please add at least one item.', 'error');
+                return;
+            }
+
+            const logbookDate = document.getElementById('logbookDate').value;
+            const customerName = document.getElementById('customerName').value;
+            const cost = document.getElementById('cost').value;
+            const brandModel = document.getElementById('brandModel').value;
+
+            const data = {
+                logbookDate,
+                customerName,
+                itemsBought: selectedItems,
+                cost,
+                brandModel,
+                signature: 'logbook_entry' // Placeholder signature
+            };
+
+            fetch('/api/logbook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showNotification('LogBook entry submitted successfully!', 'success');
+                    resetForm();
+                    loadLogbookEntries();
+                } else {
+                    showNotification(result.message || 'Error submitting entry', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error submitting entry: ' + error.message, 'error');
+            });
+        }
+
+        function loadLogbookEntries() {
+            fetch('/api/logbook')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const entries = result.logbookEntries || [];
+                        const tbody = document.getElementById('logbookTableBody');
+
+                        if (entries.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No logbook entries yet.</td></tr>';
+                            return;
+                        }
+
+                        tbody.innerHTML = '';
+                        entries.forEach((entry, index) => {
+                            const row = document.createElement('tr');
+                            const itemsText = Array.isArray(entry.itemsBought)
+                                ? entry.itemsBought.slice(0, 2).join(', ') + (entry.itemsBought.length > 2 ? '...' : '')
+                                : entry.itemsBought;
+                            
+                            row.innerHTML = `
+                                <td>${entry.id.substring(0, 8)}</td>
+                                <td>${entry.logbookDate}</td>
+                                <td>${entry.customerName}</td>
+                                <td title="${Array.isArray(entry.itemsBought) ? entry.itemsBought.join(', ') : entry.itemsBought}">${itemsText}</td>
+                                <td>₱${parseFloat(entry.cost).toFixed(2)}</td>
+                                <td>${entry.brandModel}</td>
+                                <td>${entry.submittedDate}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-view" onclick="viewLogbookEntry('${entry.id}')">View</button>
+                                        <button class="btn-delete" onclick="deleteLogbookEntry('${entry.id}')">Delete</button>
+                                    </div>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching logbook entries:', error);
+                });
+        }
+
+        function viewLogbookEntry(logbookId) {
+            fetch(`/api/logbook/${logbookId}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const entry = result.logbookEntry;
+                        let itemsList = '';
+                        if (Array.isArray(entry.itemsBought)) {
+                            itemsList = entry.itemsBought.map(i => `<li>${i}</li>`).join('');
+                        } else {
+                            itemsList = `<li>${entry.itemsBought}</li>`;
+                        }
+
+                        const modalBody = document.getElementById('viewModalBody');
+                        modalBody.innerHTML = `
+                            <div class="detail-item">
+                                <span class="detail-label">Entry ID:</span>
+                                <span class="detail-value">${entry.id}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date:</span>
+                                <span class="detail-value">${entry.logbookDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Customer Name:</span>
+                                <span class="detail-value">${entry.customerName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Items Bought:</span>
+                            </div>
+                            <div class="items-list">
+                                <ul>
+                                    ${itemsList}
+                                </ul>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Total Cost:</span>
+                                <span class="detail-value">₱${parseFloat(entry.cost).toFixed(2)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Brand/Model:</span>
+                                <span class="detail-value">${entry.brandModel}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Submitted Date:</span>
+                                <span class="detail-value">${entry.submittedDate}</span>
+                            </div>
+                        `;
+
+                        document.getElementById('viewModal').classList.add('active');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading entry: ' + error.message, 'error');
+                });
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+
+        function deleteLogbookEntry(logbookId) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                fetch(`/api/logbook/${logbookId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showNotification('Entry deleted successfully!', 'success');
+                        loadLogbookEntries();
+                    } else {
+                        showNotification(result.message || 'Error deleting entry', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error deleting entry: ' + error.message, 'error');
+                });
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('logbookForm').reset();
+            selectedItems = [];
+            updateItemsDisplay();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        function showSection(sectionId) {
+            const formSection = document.getElementById('logbook-form');
+            const listSection = document.getElementById('logbook-list');
+            const menuLinks = document.querySelectorAll('.menu-link');
+
+            if (sectionId === 'logbook-form') {
+                formSection.style.display = 'block';
+                listSection.classList.remove('active');
+                menuLinks[0].classList.add('active');
+                menuLinks[1].classList.remove('active');
+            } else if (sectionId === 'logbook-list') {
+                formSection.style.display = 'none';
+                listSection.classList.add('active');
+                menuLinks[0].classList.remove('active');
+                menuLinks[1].classList.add('active');
+                loadLogbookEntries();
+            }
+        }
+
+        // Load entries when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('logbookDate').value = today;
+            loadLogbookEntries();
+        });
+    </script>
+</body>
+</html>

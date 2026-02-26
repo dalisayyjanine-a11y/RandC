@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Diagnostic - RNC System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.25;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.5) 0%, transparent 70%);
+            top: -50px;
+            left: -50px;
+        }
+
+        .glow-orb-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.5) 0%, transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-80px) rotate(180deg); opacity: 1; }
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.15);
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            color: #23a6d5;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(35, 166, 213, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), 0 0 20px rgba(102, 126, 234, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .info-box {
+            background: rgba(35, 166, 213, 0.15);
+            border: 1px solid rgba(35, 166, 213, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #23a6d5;
+        }
+
+        .file-upload-area {
+            border: 2px dashed rgba(35, 166, 213, 0.5);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(35, 166, 213, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #23a6d5;
+            background: rgba(35, 166, 213, 0.2);
+        }
+
+        .file-upload-area input {
+            display: none;
+        }
+
+        .file-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(35, 166, 213, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .image-preview-remove:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .video-preview-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: #23a6d5;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid rgba(35, 166, 213, 0.4);
+        }
+
+        .video-preview-item .video-icon {
+            font-size: 24px;
+        }
+
+        .video-preview-item .video-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .video-preview-item .remove {
+            cursor: pointer;
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 4px 8px;
+            transition: all 0.2s;
+        }
+
+        .video-preview-item .remove:hover {
+            color: #f702a8;
+            transform: scale(1.1);
+        }
+
+        .material-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .material-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .material-item input {
+            padding: 10px 12px;
+            font-size: 0.9em;
+        }
+
+        .material-item .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .material-item .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .btn-remove-material {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-remove-material:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-add-material {
+            background: rgba(35, 166, 213, 0.2);
+            color: #23a6d5;
+            border: 1px solid rgba(35, 166, 213, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-add-material:hover {
+            background: rgba(35, 166, 213, 0.4);
+        }
+
+        .form-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f702a8 100%);
+            background-size: 200% 200%;
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.5), 0 8px 25px rgba(0, 0, 0, 0.3);
+            animation: btnGradientMove 3s ease infinite;
+        }
+
+        @keyframes btnGradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.8), 0 0 60px rgba(118, 75, 162, 0.6), 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 2000;
+            animation: slideInNotification 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .job-order-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .job-order-info {
+                grid-template-columns: 1fr;
+            }
+
+            .material-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>📋 Create Diagnostic Form</h1>
+            <p>Fill in the diagnostic details for the job order</p>
+        </div>
+
+        <div class="form-container">
+            <form id="diagnosticForm" onsubmit="handleFormSubmit(event)">
+                <!-- Job Order Lookup Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Job Order Information</h3>
+                    <div class="form-group">
+                        <label for="jobOrderId">Select Job Order *</label>
+                        <select id="jobOrderId" required onchange="handleJobOrderSelect(event)" style="width: 100%; padding: 14px 18px; border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 12px; font-size: 0.95em; background: #1a1a3e; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                            <option value="" style="background: #1a1a3e; color: white;">-- Select a Job Order --</option>
+                        </select>
+                    </div>
+
+                    <div id="jobOrderDetails" class="hidden">
+                        <div class="job-order-info" id="jobOrderInfoDisplay"></div>
+                        <input type="hidden" id="jobOrderData">
+                    </div>
+                </div>
+
+                <!-- Diagnostic Details Section -->
+                <div id="diagnosticSection" class="hidden">
+                    <!-- Images Upload -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">📸 Upload Images</h3>
+                        <div class="info-box">
+                            ✓ Minimum 3 images required (OK if only 3) | Recommended 5 | Supported: JPG, PNG, GIF
+                            <br><small style="opacity: 0.8;">Images are automatically compressed to reduce file size</small>
+                        </div>
+                        <div class="file-upload-area" onclick="document.getElementById('imagesInput').click()">
+                            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">Click to upload images or drag & drop</p>
+                            <p style="font-size: 0.9em; color: rgba(255, 255, 255, 0.5);" id="imageCount">0 images selected</p>
+                            <input type="file" id="imagesInput" multiple accept="image/*" onchange="handleImageUpload(event)">
+                        </div>
+                        <div class="file-list" id="imagesList"></div>
+                    </div>
+
+                    <!-- Video Upload -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">🎬 Upload Video</h3>
+                        <div class="info-box">
+                            ✓ Video recommended 30 Minutes or below | Supported: MP4, MOV, AVI, MKV
+                        </div>
+                        <div class="file-upload-area" onclick="document.getElementById('videoInput').click()">
+                            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">Click to upload video or drag & drop</p>
+                            <p style="font-size: 0.9em; color: rgba(255, 255, 255, 0.5);" id="videoInfo">No video selected</p>
+                            <input type="file" id="videoInput" accept="video/*" onchange="handleVideoUpload(event)">
+                        </div>
+                    </div>
+
+                    <!-- Materials Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">🔧 Materials Needed</h3>
+                        <div class="info-box">
+                            <small style="opacity: 0.8;">Quantity is automatically set to 1 for each material</small>
+                        </div>
+                        <div class="material-list" id="materialsList">
+                            <div class="material-item">
+                                <input type="text" placeholder="Material Name" class="material-name" style="flex: 1;">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" class="material-out-of-stock" title="Out of Stock - Need to Order">
+                                    <label style="color: rgba(255, 255, 255, 0.7); font-size: 0.9em;">Out of Stock</label>
+                                </div>
+                                <button type="button" class="btn-remove-material" onclick="removeMaterial(this)">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-material" onclick="addMaterial()">+ Add Material</button>
+                    </div>
+
+                    <!-- Cost and Duration -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">💰 Estimation</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label for="estimatedCost">Estimated Cost (₱) *</label>
+                                <input type="number" id="estimatedCost" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="estimatedDurationDate">Estimated Complete Date *</label>
+                                <input type="date" id="estimatedDurationDate" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">📝 Additional Notes</h3>
+                        <div class="form-group">
+                            <label for="notes">Notes (Optional)</label>
+                            <textarea id="notes" placeholder="Enter any additional notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="form-btn">✓ Submit Diagnostic</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const uploadedImages = [];
+        let uploadedVideo = null;
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 25;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (4 + Math.random() * 3) + 's';
+            
+            const size = 3 + Math.random() * 6;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Load available job orders when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAvailableJobOrders();
+        });
+
+        // Load job orders without diagnostics on page load
+        function loadAvailableJobOrders() {
+            fetch('/api/job-orders-without-diagnostics')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success && data.jobOrders && data.jobOrders.length > 0) {
+                        const select = document.getElementById('jobOrderId');
+                        const fragment = document.createDocumentFragment();
+                        
+                        // Keep the default option
+                        const defaultOption = select.querySelector('option[value=""]');
+                        
+                        // Clear existing options except default
+                        select.innerHTML = '';
+                        fragment.appendChild(defaultOption.cloneNode(true));
+                        
+                        // Add job orders
+                        data.jobOrders.forEach(jobOrder => {
+                            const option = document.createElement('option');
+                            option.value = jobOrder.id;
+                            option.textContent = `${jobOrder.id} - ${jobOrder.customerName}`;
+                            option.dataset.jobOrder = JSON.stringify(jobOrder);
+                            fragment.appendChild(option);
+                        });
+                        
+                        select.appendChild(fragment);
+                    } else {
+                        showNotification('No job orders available (all have diagnostics assigned)', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Load job orders error:', err);
+                    showNotification('Error loading job orders: ' + err.message, 'error');
+                });
+        }
+
+        // Handle job order dropdown selection
+        function handleJobOrderSelect(event) {
+            const jobOrderId = event.target.value;
+            
+            if (!jobOrderId) {
+                document.getElementById('jobOrderDetails').classList.add('hidden');
+                document.getElementById('diagnosticSection').classList.add('hidden');
+                return;
+            }
+
+            // Get the selected option's data
+            const selectedOption = event.target.options[event.target.selectedIndex];
+            const jobOrderData = JSON.parse(selectedOption.dataset.jobOrder);
+
+            displayJobOrderInfo(jobOrderData);
+            document.getElementById('diagnosticSection').classList.remove('hidden');
+        }
+
+        function displayJobOrderInfo(jobOrder) {
+            const displayHtml = `
+                <div class="info-item">
+                    <div class="info-label">Customer Name</div>
+                    <div class="info-value">${jobOrder.customerName}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value">${jobOrder.customerNumber}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Address</div>
+                    <div class="info-value">${jobOrder.customerAddress}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Device Type</div>
+                    <div class="info-value">${jobOrder.deviceType}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Brand & Model</div>
+                    <div class="info-value">${jobOrder.brandModel}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Problems</div>
+                    <div class="info-value">${Array.isArray(jobOrder.selectedProblems) ? jobOrder.selectedProblems.join(', ') : (jobOrder.problems ? (Array.isArray(jobOrder.problems) ? jobOrder.problems.join(', ') : jobOrder.problems) : 'N/A')}</div>
+                </div>
+            `;
+            
+            document.getElementById('jobOrderInfoDisplay').innerHTML = displayHtml;
+            document.getElementById('jobOrderDetails').classList.remove('hidden');
+            document.getElementById('jobOrderData').value = JSON.stringify(jobOrder);
+        }
+
+        function handleImageUpload(event) {
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Compress image before storing
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Set max dimensions
+                        let width = img.width;
+                        let height = img.height;
+                        const maxWidth = 1200;
+                        const maxHeight = 1200;
+                        
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round(height * maxWidth / width);
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round(width * maxHeight / height);
+                                height = maxHeight;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to JPEG with compression
+                        const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        uploadedImages.push({
+                            name: file.name,
+                            data: compressedData
+                        });
+                        updateImagesList();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateImagesList() {
+            document.getElementById('imageCount').textContent = `${uploadedImages.length} images selected`;
+            const listHtml = uploadedImages.map((img, idx) => `
+                <div class="image-preview-item" title="${img.name}">
+                    <img src="${img.data}" alt="Preview ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                    <button type="button" class="image-preview-remove" onclick="removeImage(${idx})">×</button>
+                </div>
+            `).join('');
+            document.getElementById('imagesList').innerHTML = listHtml;
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImagesList();
+        }
+
+        function handleVideoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedVideo = {
+                        name: file.name,
+                        data: e.target.result
+                    };
+                    // Update text info
+                    document.getElementById('videoInfo').textContent = `✓ ${file.name} selected`;
+                    
+                    // Add video preview with professional layout
+                    let videoList = document.getElementById('videoList');
+                    if (!videoList) {
+                        // Create video preview container if it doesn't exist
+                        const container = document.createElement('div');
+                        container.id = 'videoList';
+                        container.className = 'file-list';
+                        container.style.marginTop = '15px';
+                        document.getElementById('videoInput').parentElement.parentElement.appendChild(container);
+                        videoList = container;
+                    }
+                    
+                    videoList.innerHTML = `
+                        <div class="video-preview-item">
+                            <span class="video-icon">🎬</span>
+                            <span class="video-name">${file.name}</span>
+                            <span class="remove" onclick="removeVideo()">✕</span>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeVideo() {
+            uploadedVideo = null;
+            document.getElementById('videoInfo').textContent = 'No video selected';
+            const videoList = document.getElementById('videoList');
+            if (videoList) {
+                videoList.innerHTML = '';
+            }
+            // Reset the file input
+            document.getElementById('videoInput').value = '';
+        }
+
+        function addMaterial() {
+            const materialsList = document.getElementById('materialsList');
+            const newMaterial = document.createElement('div');
+            newMaterial.className = 'material-item';
+            newMaterial.innerHTML = `
+                <input type="text" placeholder="Material Name" class="material-name" style="flex: 1;">
+                <div class="checkbox-group">
+                    <input type="checkbox" class="material-out-of-stock">
+                    <label style="color: rgba(255, 255, 255, 0.7); font-size: 0.9em;">Out of Stock</label>
+                </div>
+                <button type="button" class="btn-remove-material" onclick="removeMaterial(this)">Remove</button>
+            `;
+            materialsList.appendChild(newMaterial);
+        }
+
+        function removeMaterial(btn) {
+            btn.parentElement.remove();
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Validate images - minimum 3 (OK if only 3), recommended 5
+            if (uploadedImages.length < 3) {
+                showNotification('Please upload at least 3 images', 'error');
+                return;
+            }
+
+            // Video is optional now
+            // if (!uploadedVideo) {
+            //     showNotification('Please upload a video', 'error');
+            //     return;
+            // }
+
+            // Collect materials - quantity is automatically set to 1
+            const materials = [];
+            document.querySelectorAll('.material-item').forEach(item => {
+                const nameInput = item.querySelector('.material-name');
+                const name = nameInput ? nameInput.value.trim() : '';
+                const outOfStockCheckbox = item.querySelector('.material-out-of-stock');
+                const outOfStock = outOfStockCheckbox ? outOfStockCheckbox.checked : false;
+                
+                if (name && name.length > 0) {
+                    materials.push({ name: name, quantity: 1, outOfStock: outOfStock });
+                }
+            });
+
+            console.log('Collected materials:', materials);
+            console.log('Uploaded images:', uploadedImages.length);
+            console.log('Uploaded video:', uploadedVideo ? 'yes' : 'no');
+
+            // Validate cost and date
+            const estimatedCost = parseFloat(document.getElementById('estimatedCost').value);
+            const estimatedDurationDate = document.getElementById('estimatedDurationDate').value;
+
+            if (!estimatedCost || estimatedCost <= 0) {
+                showNotification('Please enter a valid estimated cost', 'error');
+                return;
+            }
+
+            if (!estimatedDurationDate) {
+                showNotification('Please select an estimated completion date', 'error');
+                return;
+            }
+
+            // Submit form
+            const jobOrderId = document.getElementById('jobOrderId').value;
+            const formData = {
+                jobOrderId,
+                images: uploadedImages,
+                videoData: uploadedVideo,
+                materials,
+                estimatedCost,
+                estimatedDurationDate,
+                notes: document.getElementById('notes').value
+            };
+
+            fetch('/api/diagnostic/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showNotification('Diagnostic submitted successfully! ID: ' + data.diagnosticId, 'success');
+                    
+                    // Send message to parent window to close modal and refresh diagnostics
+                    setTimeout(() => {
+                        // Try to communicate with parent window
+                        if (window.parent !== window) {
+                            window.parent.postMessage({ 
+                                type: 'diagnostic-created', 
+                                diagnosticId: data.diagnosticId 
+                            }, '*');
+                        }
+                        
+                        // Also try using custom event for cross-origin scenarios
+                        window.parent.dispatchEvent(new CustomEvent('diagnostic-created', { 
+                            detail: { diagnosticId: data.diagnosticId } 
+                        }));
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Error submitting diagnostic', 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Submit diagnostic error:', err);
+                showNotification('Error: ' + err.message, 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-in forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

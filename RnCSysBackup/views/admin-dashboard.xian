@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - RNC System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); min-height: 100vh; display: flex; position: relative; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .bg-gradient { position: absolute; width: 100%; height: 100%; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af); background-size: 400% 400%; animation: gradientBG 8s ease infinite; opacity: 0.25; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(50px); animation: orbFloat 10s ease-in-out infinite; }
+        .glow-orb-1 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(102, 126, 234, 0.5) 0%, transparent 70%); top: -50px; left: -50px; }
+        .glow-orb-2 { width: 250px; height: 250px; background: radial-gradient(circle, rgba(118, 75, 162, 0.5) 0%, transparent 70%); bottom: -50px; right: -50px; animation-delay: -5s; }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.1); } }
+        .particles { position: absolute; width: 100%; height: 100%; }
+        .particle { position: absolute; width: 5px; height: 5px; background: rgba(255, 255, 255, 0.8); border-radius: 50%; animation: float 5s ease-in-out infinite; box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; } 50% { transform: translateY(-80px) rotate(180deg); opacity: 1; } }
+        .sidebar { width: 280px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); min-height: 100vh; padding: 25px 0; position: fixed; left: 0; top: 0; border-right: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 40px rgba(102, 126, 234, 0.2); transition: all 0.3s ease; z-index: 100; overflow-y: auto; }
+        .sidebar.collapsed { left: -280px; }
+        .sidebar-header { text-align: center; padding: 0 20px 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
+        .sidebar-header .logo { font-size: 48px; display: block; margin-bottom: 10px; animation: bounce 2s ease-in-out infinite, iconGlow 2s ease-in-out infinite alternate; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes iconGlow { from { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); } to { filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.9)); } }
+        .sidebar-header h2 { font-size: 1.6em; color: white; text-shadow: 0 0 20px rgba(102, 126, 234, 0.5); text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar-header p { font-size: 0.8em; color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 5px; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 14px 25px; color: rgba(255, 255, 255, 0.7); text-decoration: none; transition: all 0.3s; border-left: 4px solid transparent; font-weight: 500; cursor: pointer; }
+        .sidebar-menu li a:hover { background: rgba(255, 255, 255, 0.1); color: white; border-left-color: #23a6d5; text-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
+        .sidebar-menu li a.active { background: rgba(102, 126, 234, 0.2); color: white; border-left-color: #f702a8; text-shadow: 0 0 15px rgba(247, 2, 168, 0.5); }
+        .menu-icon { font-size: 1.3em; }
+        .main-content { flex: 1; margin-left: 280px; padding: 25px; transition: margin 0.3s ease; position: relative; z-index: 1; overflow-y: auto; height: 100vh; }
+        .main-content.expanded { margin-left: 0; }
+        .header { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); padding: 20px 25px; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 30px rgba(102, 126, 234, 0.15); display: flex; justify-content: space-between; align-items: center; animation: fadeInDown 0.6s ease-out; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .header h1 { color: white; font-size: 1.8em; text-shadow: 0 0 20px rgba(102, 126, 234, 0.5); text-transform: uppercase; letter-spacing: 2px; }
+        .header p { color: rgba(255, 255, 255, 0.7); margin-top: 5px; }
+        .admin-info { text-align: right; }
+        .admin-info p { color: rgba(255, 255, 255, 0.9); margin: 3px 0; font-size: 0.9em; }
+        .admin-info strong { color: #23a6d5; text-shadow: 0 0 10px rgba(35, 166, 213, 0.5); }
+        .content-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .section-title { color: white; font-size: 1.6em; margin-bottom: 20px; text-shadow: 0 0 15px rgba(102, 126, 234, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; transition: all 0.3s ease; box-shadow: 0 0 30px rgba(102, 126, 234, 0.15); animation: fadeInUp 0.6s ease-out backwards; }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; } .stat-card:nth-child(2) { animation-delay: 0.2s; } .stat-card:nth-child(3) { animation-delay: 0.3s; } .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 0 40px rgba(102, 126, 234, 0.3), 0 0 60px rgba(118, 75, 162, 0.2); border-color: rgba(255, 255, 255, 0.2); }
+        .stat-card .stat-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+        .stat-card .stat-value { font-size: 2.5em; font-weight: 700; color: white; text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+        .stat-card .stat-label { color: rgba(255, 255, 255, 0.7); font-size: 0.9em; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .job-stats-section { margin-top: 40px; }
+        .job-stats-title { color: white; font-size: 1.4em; margin-bottom: 20px; text-shadow: 0 0 15px rgba(102, 126, 234, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .job-stat-card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 15px; border: 2px solid rgba(255, 255, 255, 0.1); padding: 25px; transition: all 0.3s ease; box-shadow: 0 0 30px rgba(102, 126, 234, 0.15); animation: fadeInUp 0.6s ease-out backwards, cardGlowPulse 3s ease-in-out infinite; position: relative; overflow: hidden; }
+        .job-stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, currentColor, transparent); opacity: 0.7; }
+        .job-stat-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%); transform: rotate(45deg); animation: shimmer 3s ease-in-out infinite; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        @keyframes cardGlowPulse { 0%, 100% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.15), 0 0 20px rgba(102, 126, 234, 0.1); } 50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.25), 0 0 30px rgba(102, 126, 234, 0.15); } }
+        @keyframes shimmer { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+        .job-stat-card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.3); animation: none; }
+        .job-stat-card:hover::after { opacity: 1; }
+        .job-stat-card.total { border-color: rgba(102, 126, 234, 0.5); color: #667eea; animation: fadeInUp 0.6s ease-out backwards, glowTotal 3s ease-in-out infinite; }
+        .job-stat-card.request-submitted { border-color: rgba(100, 150, 200, 0.5); color: #6496c8; animation: fadeInUp 0.6s ease-out backwards, glowRequestSubmitted 3s ease-in-out infinite; animation-delay: 0.1s; }
+        .job-stat-card.diagnostic { border-color: rgba(250, 200, 20, 0.5); color: #fac814; animation: fadeInUp 0.6s ease-out backwards, glowDiagnostic 3s ease-in-out infinite; animation-delay: 0.2s; }
+        .job-stat-card.pending { border-color: rgba(255, 150, 0, 0.5); color: #ff9600; animation: fadeInUp 0.6s ease-out backwards, glowPending 3s ease-in-out infinite; animation-delay: 0.3s; }
+        .job-stat-card.in-progress { border-color: rgba(35, 166, 213, 0.5); color: #23a6d5; animation: fadeInUp 0.6s ease-out backwards, glowInProgress 3s ease-in-out infinite; animation-delay: 0.4s; }
+        .job-stat-card.checking { border-color: rgba(247, 2, 168, 0.5); color: #f702a8; animation: fadeInUp 0.6s ease-out backwards, glowChecking 3s ease-in-out infinite; animation-delay: 0.5s; }
+        .job-stat-card.completed { border-color: rgba(34, 170, 50, 0.5); color: #22aa32; animation: fadeInUp 0.6s ease-out backwards, glowCompleted 3s ease-in-out infinite; animation-delay: 0.6s; }
+        @keyframes glowTotal { 0%, 100% { box-shadow: 0 0 25px rgba(102, 126, 234, 0.3), 0 0 15px rgba(102, 126, 234, 0.2); } 50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.5), 0 0 25px rgba(102, 126, 234, 0.35); } }
+        @keyframes glowRequestSubmitted { 0%, 100% { box-shadow: 0 0 25px rgba(100, 150, 200, 0.3), 0 0 15px rgba(100, 150, 200, 0.2); } 50% { box-shadow: 0 0 40px rgba(100, 150, 200, 0.5), 0 0 25px rgba(100, 150, 200, 0.35); } }
+        @keyframes glowDiagnostic { 0%, 100% { box-shadow: 0 0 25px rgba(250, 200, 20, 0.3), 0 0 15px rgba(250, 200, 20, 0.2); } 50% { box-shadow: 0 0 40px rgba(250, 200, 20, 0.5), 0 0 25px rgba(250, 200, 20, 0.35); } }
+        @keyframes glowPending { 0%, 100% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.3), 0 0 15px rgba(255, 150, 0, 0.2); } 50% { box-shadow: 0 0 40px rgba(255, 150, 0, 0.5), 0 0 25px rgba(255, 150, 0, 0.35); } }
+        @keyframes glowInProgress { 0%, 100% { box-shadow: 0 0 25px rgba(35, 166, 213, 0.3), 0 0 15px rgba(35, 166, 213, 0.2); } 50% { box-shadow: 0 0 40px rgba(35, 166, 213, 0.5), 0 0 25px rgba(35, 166, 213, 0.35); } }
+        @keyframes glowChecking { 0%, 100% { box-shadow: 0 0 25px rgba(247, 2, 168, 0.3), 0 0 15px rgba(247, 2, 168, 0.2); } 50% { box-shadow: 0 0 40px rgba(247, 2, 168, 0.5), 0 0 25px rgba(247, 2, 168, 0.35); } }
+        @keyframes glowCompleted { 0%, 100% { box-shadow: 0 0 25px rgba(34, 170, 50, 0.3), 0 0 15px rgba(34, 170, 50, 0.2); } 50% { box-shadow: 0 0 40px rgba(34, 170, 50, 0.5), 0 0 25px rgba(34, 170, 50, 0.35); } }
+        .job-stat-card .job-stat-icon { font-size: 36px; margin-bottom: 12px; display: block; animation: iconBounce 2s ease-in-out infinite; }
+        @keyframes iconBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .job-stat-card .job-stat-value { font-size: 2.8em; font-weight: 800; color: currentColor; text-shadow: 0 0 20px currentColor; animation: valuePulse 2s ease-in-out infinite; }
+        @keyframes valuePulse { 0%, 100% { text-shadow: 0 0 20px currentColor; } 50% { text-shadow: 0 0 30px currentColor, 0 0 40px currentColor; } }
+        .job-stat-card .job-stat-label { color: rgba(255, 255, 255, 0.7); font-size: 0.85em; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .form-container { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); padding: 30px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 30px rgba(102, 126, 234, 0.2); max-width: 650px; animation: fadeInUp 0.6s ease-out; }
+        .form-container.with-success { max-width: none; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+        .form-wrapper { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); padding: 30px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 30px rgba(102, 126, 234, 0.2); }
+        .success-card { background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(60, 200, 90, 0.1) 100%); border-radius: 15px; border: 2px solid rgba(40, 167, 69, 0.3); padding: 30px; box-shadow: 0 0 40px rgba(40, 167, 69, 0.2); animation: slideInRight 0.6s ease-out; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        .success-card .success-icon { font-size: 3em; margin-bottom: 15px; display: block; text-align: center; animation: bounce 1s ease-in-out infinite; }
+        .success-card .success-title { color: #75e6a9; font-size: 1.3em; font-weight: 700; margin-bottom: 15px; text-align: center; }
+        .success-card .tech-info { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #75e6a9; }
+        .success-card .tech-info-label { color: rgba(255, 255, 255, 0.6); font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .success-card .tech-info-value { color: white; font-size: 1.1em; font-weight: 600; word-break: break-all; }
+        .success-card .credentials { background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid rgba(117, 230, 169, 0.2); }
+        .success-card .credentials-label { color: rgba(255, 255, 255, 0.7); font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
+        .success-card .copy-btn { width: 100%; padding: 10px; background: rgba(35, 166, 213, 0.3); border: 1px solid rgba(35, 166, 213, 0.5); color: #23a6d5; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85em; transition: all 0.3s; margin-bottom: 8px; }
+        .success-card .copy-btn:hover { background: rgba(35, 166, 213, 0.5); box-shadow: 0 0 15px rgba(35, 166, 213, 0.3); }
+        .success-card .copy-btn:active { transform: scale(0.98); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 18px; border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 12px; font-size: 0.95em; transition: all 0.3s; background: rgba(255, 255, 255, 0.05); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), 0 0 20px rgba(102, 126, 234, 0.3); background: rgba(255, 255, 255, 0.1); }
+        .form-group input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .form-group select { cursor: pointer; }
+        .form-group select option { background: #302b63; color: white; }
+        .specialty-selector { position: relative; }
+        .specialty-input-wrapper { display: flex; gap: 10px; align-items: center; }
+        .specialty-input-wrapper input { flex: 1; }
+        .specialty-add-btn { padding: 14px 20px; background: linear-gradient(135deg, #23a6d5 0%, #23d5ab 100%); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 1.2em; }
+        .specialty-add-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(35, 166, 213, 0.5); }
+        .selected-specialties { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .specialty-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(35, 166, 213, 0.2); color: #23a6d5; border-radius: 20px; font-size: 0.85em; font-weight: 600; border: 1px solid rgba(35, 166, 213, 0.3); animation: fadeIn 0.3s ease-out; }
+        .specialty-tag .remove { cursor: pointer; font-size: 1.1em; opacity: 0.7; transition: all 0.2s; }
+        .specialty-tag .remove:hover { opacity: 1; color: #f702a8; }
+        .form-btn, .login-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f702a8 100%); background-size: 200% 200%; color: white; padding: 16px 40px; border: none; border-radius: 12px; cursor: pointer; font-size: 1em; font-weight: 700; width: 100%; transition: all 0.4s; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 25px rgba(102, 126, 234, 0.5), 0 8px 25px rgba(0, 0, 0, 0.3); animation: fadeInUp 0.6s ease-out 0.3s backwards, btnGradientMove 3s ease infinite; }
+        @keyframes btnGradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .form-btn:hover { transform: translateY(-3px); box-shadow: 0 0 40px rgba(102, 126, 234, 0.8), 0 0 60px rgba(118, 75, 162, 0.6), 0 15px 35px rgba(0, 0, 0, 0.4); }
+        .success-message { background: rgba(40, 167, 69, 0.15); color: #75e6a9; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(40, 167, 69, 0.3); box-shadow: 0 0 20px rgba(40, 167, 69, 0.2); }
+        .success-message strong { color: white; }
+        .success-message em { color: rgba(255, 255, 255, 0.6); font-size: 0.85em; }
+        .technicians-table { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 30px rgba(102, 126, 234, 0.2); overflow: hidden; animation: fadeInUp 0.6s ease-out; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%); }
+        th { padding: 18px; text-align: left; font-weight: 700; color: white; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 15px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.85); }
+        tbody tr { transition: all 0.3s; cursor: pointer; }
+        tbody tr:hover { background: rgba(102, 126, 234, 0.15); box-shadow: inset 0 0 20px rgba(102, 126, 234, 0.2); }
+/* Status Badge - Base Styles */
+        .status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+        
+        /* Active Status - Yellow Glowing Pulse Animation */
+        .status-badge.active { 
+            background: rgba(255, 193, 7, 0.2); 
+            color: #ffc107; 
+            border: 1px solid rgba(255, 193, 7, 0.5); 
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+            animation: activeStatusPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        @keyframes activeStatusPulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.3), 0 0 20px rgba(255, 193, 7, 0.15);
+                border-color: rgba(255, 193, 7, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(255, 193, 7, 0.6), 0 0 35px rgba(255, 193, 7, 0.35), 0 0 50px rgba(255, 193, 7, 0.15);
+                border-color: rgba(255, 193, 7, 0.8);
+            }
+        }
+        
+/* Blocked/Inactive Status - Orange Glowing Pulse Animation */
+        .status-badge.inactive { 
+            background: rgba(255, 165, 0, 0.25); 
+            color: #ffa500; 
+            border: 1px solid rgba(255, 165, 0, 0.5); 
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+            animation: inactiveStatusPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        @keyframes inactiveStatusPulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 165, 0, 0.3), 0 0 20px rgba(255, 165, 0, 0.15);
+                border-color: rgba(255, 165, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(255, 165, 0, 0.6), 0 0 35px rgba(255, 165, 0, 0.35), 0 0 50px rgba(255, 165, 0, 0.15);
+                border-color: rgba(255, 165, 0, 0.8);
+            }
+        }
+        
+        /* Blocked Status - Orange Glowing Pulse Animation */
+        .status-badge.blocked { 
+            background: rgba(255, 165, 0, 0.25); 
+            color: #ffa500; 
+            border: 1px solid rgba(255, 165, 0, 0.5); 
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+            animation: inactiveStatusPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        .status-badge[data-status="Request Submitted"] { background: rgba(100, 150, 200, 0.2); color: #6496c8; border: 1px solid rgba(100, 150, 200, 0.5); }
+        .status-badge[data-status="Diagnostic"] { background: rgba(250, 200, 20, 0.2); color: #fac814; border: 1px solid rgba(250, 200, 20, 0.5); }
+        .status-badge[data-status="Pending"] { background: rgba(255, 150, 0, 0.2); color: #ff9600; border: 1px solid rgba(255, 150, 0, 0.5); }
+        .status-badge[data-status="In Progress"] { background: rgba(35, 166, 213, 0.2); color: #23a6d5; border: 1px solid rgba(35, 166, 213, 0.5); }
+        .status-badge[data-status="Checking"] { background: rgba(247, 2, 168, 0.2); color: #f702a8; border: 1px solid rgba(247, 2, 168, 0.5); }
+        .status-badge[data-status="Completed"] { background: rgba(34, 100, 50, 0.2); color: #226432; border: 1px solid rgba(34, 100, 50, 0.5); }
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-action { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75em; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-activate { background: rgba(40, 167, 69, 0.2); color: #75e6a9; border: 1px solid rgba(40, 167, 69, 0.3); }
+        .btn-activate:hover { background: rgba(40, 167, 69, 0.4); box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); }
+        .btn-deactivate { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+        .btn-deactivate:hover { background: rgba(255, 193, 7, 0.4); box-shadow: 0 0 15px rgba(255, 193, 7, 0.4); }
+.btn-delete { background: rgba(220, 38, 38, 0.2); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.3); animation: deleteButtonGlow 2s ease-in-out infinite; }
+        .btn-delete:hover { background: rgba(220, 38, 38, 0.4); box-shadow: 0 0 20px rgba(220, 38, 38, 0.5); }
+        
+        @keyframes deleteButtonGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(220, 38, 38, 0.3), 0 0 15px rgba(220, 38, 38, 0.15); }
+            50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), 0 0 30px rgba(220, 38, 38, 0.3), 0 0 40px rgba(220, 38, 38, 0.15); }
+        }
+        .skill-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: rgba(35, 166, 213, 0.2); color: #23a6d5; border-radius: 12px; font-size: 0.7em; font-weight: 600; border: 1px solid rgba(35, 166, 213, 0.3); margin: 2px; }
+        .empty-state { text-align: center; padding: 50px 20px; background: rgba(255, 255, 255, 0.08); border-radius: 15px; color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); animation: fadeInUp 0.6s ease-out; }
+        .empty-state h2 { color: #667eea; margin-bottom: 12px; text-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+        .burger-menu { position: fixed; top: 20px; left: 20px; z-index: 1001; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; transition: all 0.3s ease; }
+        .burger-menu:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+        .burger-menu span { width: 25px; height: 3px; background: white; border-radius: 3px; transition: all 0.3s ease; }
+        .burger-menu.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .burger-menu.active span:nth-child(2) { opacity: 0; }
+        .burger-menu.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 18px 28px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 2000; animation: slideInNotification 0.5s ease-out, notificationGlow 2s ease-in-out infinite; backdrop-filter: blur(10px); border: 2px solid; display: flex; align-items: center; gap: 12px; max-width: 400px; }
+        .notification::before { content: '✓'; font-size: 22px; font-weight: bold; filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.8)); }
+        .notification.success { background: rgba(34, 197, 94, 0.15); color: #22c55e; border-color: rgba(34, 197, 94, 0.5); box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4); }
+        .notification.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.5); animation: slideInNotification 0.5s ease-out, errorGlow 2s ease-in-out infinite; }
+        .notification.error::before { content: '✕'; filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)); }
+        .notification.info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-color: rgba(59, 130, 246, 0.5); animation: slideInNotification 0.5s ease-out, infoGlow 2s ease-in-out infinite; }
+        .notification.warning { background: rgba(249, 115, 22, 0.15); color: #f97316; border-color: rgba(249, 115, 22, 0.5); animation: slideInNotification 0.5s ease-out, warningGlow 2s ease-in-out infinite; }
+        .notification.warning::before { content: '⚠️'; }
+        @keyframes slideInNotification { from { opacity: 0; transform: translateX(400px) rotate(5deg); } to { opacity: 1; transform: translateX(0) rotate(0); } }
+        @keyframes notificationGlow { 0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); } 50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8); } }
+        @keyframes errorGlow { 0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); } 50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); } }
+        @keyframes slideOut { to { opacity: 0; transform: translateX(400px) rotate(-5deg); } }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 3000; justify-content: center; align-items: center; animation: fadeIn 0.3s ease-out; }
+        .modal.active { display: flex; }
+        .modal-content { background: rgba(48, 43, 99, 0.98); backdrop-filter: blur(25px); padding: 40px 50px; padding-top: 80px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 0 60px rgba(102, 126, 234, 0.6), 0 0 100px rgba(118, 75, 162, 0.4), 0 0 150px rgba(247, 2, 168, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5); max-width: 1000px; width: 90%; max-height: 80vh; overflow-y: auto; animation: modalSlideUp 0.5s ease-out; position: relative; }
+        @keyframes modalSlideUp { from { opacity: 0; transform: translateY(50px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+        .modal-header h3 { color: white; font-size: 1.8em; text-shadow: 0 0 20px rgba(102, 126, 234, 0.8); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .modal-close { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.8); font-size: 1.5em; cursor: pointer; transition: all 0.3s; padding: 8px 12px; border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { color: #f702a8; background: rgba(247, 2, 168, 0.2); border-color: rgba(247, 2, 168, 0.5); transform: rotate(90deg); }
+        .modal-body { color: white; }
+        .modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 25px; }
+        @media (max-width: 768px) { .modal-info-grid { grid-template-columns: 1fr; } }
+        .modal-info-item { background: rgba(255, 255, 255, 0.08); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s; }
+        .modal-info-item:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(102, 126, 234, 0.4); }
+        .modal-info-item label { display: block; font-size: 0.8em; color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+        .modal-info-item input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); color: white; font-size: 1em; transition: all 0.3s; }
+        .modal-info-item input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2); }
+        .modal-info-item input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .password-input-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+        .password-input-wrapper input { padding-right: 45px; width: 100%; }
+        .password-toggle-icon { position: absolute; right: 15px; cursor: pointer; font-size: 1.3em; color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); }
+        .password-toggle-icon:hover { color: #23a6d5; background: rgba(35, 166, 213, 0.15); }
+        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .modal-actions .form-btn { padding: 15px 24px; border-radius: 15px; font-size: 0.95em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; transition: all 0.4s; border: none; cursor: pointer; color: white; }
+        .modal-btn-save { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f702a8 100%); background-size: 200% 200%; border: 1.5px solid rgba(247, 2, 168, 0.3); }
+        .modal-btn-save:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 50px rgba(102, 126, 234, 0.9), 0 0 80px rgba(118, 75, 162, 0.7), 0 0 120px rgba(247, 2, 168, 0.5); }
+        .modal-btn-back { background: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.3) !important; color: white; }
+        .modal-btn-back:hover { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.5); transform: translateY(-2px); }
+        .jobs-table-container { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; box-shadow: 0 0 30px rgba(102, 126, 234, 0.2); overflow-x: auto; animation: fadeInUp 0.6s ease-out; }
+        .jobs-table-container h3 { color: white; font-size: 1.4em; margin-bottom: 20px; text-shadow: 0 0 15px rgba(102, 126, 234, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .jobs-table-wrapper { width: 100%; overflow-x: auto; }
+        .jobs-table { width: 100%; border-collapse: collapse; margin: 0; }
+        .jobs-table thead { background: rgba(102, 126, 234, 0.2); border: 1px solid rgba(102, 126, 234, 0.3); }
+        .jobs-table th { padding: 15px 12px; text-align: left; color: #23a6d5; font-weight: 700; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; border-right: 1px solid rgba(102, 126, 234, 0.3); }
+        .jobs-table th:last-child { border-right: none; }
+        .jobs-table tbody tr { border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .jobs-table tbody tr:hover { background: rgba(102, 126, 234, 0.1); }
+        .jobs-table td { padding: 14px 12px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .jobs-table td:last-child { border-right: none; }
+        .empty-message { text-align: center; padding: 40px 20px; color: rgba(255, 255, 255, 0.6); font-style: italic; }
+        
+        /* Delete Confirmation Modal Warning Styles */
+        .delete-modal-warning { text-align: center; }
+        .delete-modal-warning .warning-icon { font-size: 60px; margin-bottom: 20px; display: block; }
+        .delete-modal-warning h4 { color: #f702a8; font-size: 1.4em; margin-bottom: 15px; text-shadow: 0 0 15px rgba(247, 2, 168, 0.5); }
+        .delete-modal-warning p { color: rgba(255, 255, 255, 0.8); margin-bottom: 10px; font-size: 1em; }
+        .delete-modal-warning .tech-name { color: #23a6d5; font-weight: 700; font-size: 1.1em; }
+        .delete-modal-warning .warning-text { color: #ffc107; font-size: 0.9em; margin-top: 15px; padding: 12px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3); }
+        .delete-modal-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
+        .btn-confirm-delete { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border: 2px solid rgba(239, 68, 68, 0.5) !important; }
+        .btn-confirm-delete:hover { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
+        
+        @media (max-width: 768px) { .sidebar { width: 240px; } .sidebar.collapsed { left: -240px; } .main-content { margin-left: 240px; } .main-content.expanded { margin-left: 0; } .header { flex-direction: column; gap: 15px; text-align: center; } .admin-info { text-align: center; } .stats-grid { grid-template-columns: 1fr; } table { font-size: 0.85em; } th, td { padding: 10px 8px; } .action-buttons { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+    <button class="burger-menu" id="burgerMenu"><span></span><span></span><span></span></button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">🔧</span>
+            <h2>RNC</h2>
+            <p>Admin Panel</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a id="menu-dashboard" class="menu-link active"><span class="menu-icon">📊</span> Dashboard</a></li>
+            <li><a id="menu-add-tech" class="menu-link"><span class="menu-icon">➕</span> Add Technician</a></li>
+            <li><a id="menu-manage-tech" class="menu-link"><span class="menu-icon">👥</span> Manage Technicians</a></li>
+            <li><a id="menu-job-orders" class="menu-link"><span class="menu-icon">📋</span> Job Orders</a></li>
+            <li><a id="menu-diagnostics" class="menu-link"><span class="menu-icon">🔍</span> Diagnostics</a></li>
+            <li><a id="menu-logbook" class="menu-link"><span class="menu-icon">📚</span> LogBook</a></li>
+            <li><a id="menu-financial" class="menu-link"><span class="menu-icon">💰</span> Financial Dashboard</a></li>
+            <li><a id="menu-rtos" class="menu-link"><span class="menu-icon">🔄</span> RTO List</a></li>
+            <li><a href="/logout" class="menu-link"><span class="menu-icon">🚪</span> Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div><h1>Admin Control Panel</h1><p>Manage Your Technician Team</p></div>
+            <div class="admin-info"><p><strong>Welcome, Admin!</strong></p><p><%- admin.email %></p></div>
+        </div>
+        <div id="dashboard" class="content-section active">
+            <h2 class="section-title">📊 Dashboard Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-value"><%- technicians.length %></div><div class="stat-label">Total Technicians</div></div>
+                <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value"><%- technicians.filter(t => t.status === 'active').length %></div><div class="stat-label">Active Technicians</div></div>
+                <div class="stat-card"><span class="stat-icon">⏸️</span><div class="stat-value"><%- technicians.filter(t => t.status === 'inactive').length %></div><div class="stat-label">Inactive Technicians</div></div>
+                <div class="stat-card"><span class="stat-icon">🔧</span><div class="stat-value"><%- technicians.filter(t => t.specialty).length %></div><div class="stat-label">Specialized Skills</div></div>
+            </div>
+            <div class="job-stats-section">
+                <h3 class="job-stats-title">📋 Job Order Statistics</h3>
+                <div class="stats-grid">
+                    <div class="job-stat-card total"><span class="job-stat-icon">📌</span><div class="job-stat-value"><%- jobOrderStats.total %></div><div class="job-stat-label">Total Orders</div></div>
+                    <div class="job-stat-card request-submitted"><span class="job-stat-icon">📝</span><div class="job-stat-value"><%- jobOrderStats.requestSubmitted %></div><div class="job-stat-label">Request Submitted</div></div>
+                    <div class="job-stat-card diagnostic"><span class="job-stat-icon">🔍</span><div class="job-stat-value"><%- jobOrderStats.diagnostic %></div><div class="job-stat-label">Diagnostic</div></div>
+                    <div class="job-stat-card pending"><span class="job-stat-icon">⏳</span><div class="job-stat-value"><%- jobOrderStats.pending %></div><div class="job-stat-label">Pending</div></div>
+                    <div class="job-stat-card in-progress"><span class="job-stat-icon">⚙️</span><div class="job-stat-value"><%- jobOrderStats.inProgress %></div><div class="job-stat-label">In Progress</div></div>
+                    <div class="job-stat-card checking"><span class="job-stat-icon">✔️</span><div class="job-stat-value"><%- jobOrderStats.checking %></div><div class="job-stat-label">Checking</div></div>
+                    <div class="job-stat-card completed"><span class="job-stat-icon">✅</span><div class="job-stat-value"><%- jobOrderStats.completed %></div><div class="job-stat-label">Completed</div></div>
+                </div>
+            </div>
+        </div>
+        <div id="add-tech" class="content-section">
+            <h2 class="section-title">➕ Add New Technician</h2>
+            <div class="form-container <% if (success) { %>with-success<% } %>">
+                <div class="form-wrapper">
+                    <form method="POST" action="/add-technician" id="addTechForm">
+                    <div class="form-group"><label for="name">Full Name *</label><input type="text" id="name" name="name" required placeholder="e.g., John Doe"></div>
+                    <div class="form-group"><label for="email">Email Address *</label><input type="email" id="email" name="email" required placeholder="e.g., john@rnc.com"></div>
+                    <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" name="phone" placeholder="e.g., +63-9XX-XXX-XXXX"></div>
+                    <div class="form-group">
+                        <label>Specialty *</label>
+                        <div class="specialty-selector">
+                            <div class="specialty-input-wrapper"><input type="text" id="specialtyInput" placeholder="Type specialty or select from list..."><button type="button" class="specialty-add-btn" onclick="addSpecialty()">+</button></div>
+                            <select id="specialtyDropdown" onchange="selectFromDropdown(this.value)"><option value="">-- Select from List --</option><option value="Desktop Computer Repair">Desktop Computer Repair</option><option value="Laptop Repair">Laptop Repair</option><option value="Computer Hardware">Computer Hardware</option><option value="Computer Software">Computer Software</option><option value="Virus & Malware Removal">Virus & Malware Removal</option><option value="Data Recovery">Data Recovery</option><option value="Network Setup">Network Setup</option></select>
+                            <div class="selected-specialties" id="selectedSpecialties"></div>
+                        </div><input type="hidden" id="specialty" name="specialty" required>
+                    </div>
+                    <div class="form-group"><label for="password">Password (Optional)</label><input type="password" id="password" name="password" placeholder="Leave empty for default: Tech@123456"></div>
+                    <button type="submit" class="form-btn">Create Technician Account</button>
+                    </form>
+                </div>
+                <% if (success) { %>
+                    <div class="success-card">
+                        <span class="success-icon">✅</span>
+                        <div class="success-title">Technician Added!</div>
+                        
+                        <div class="tech-info">
+                            <div class="tech-info-label">👤 Name</div>
+                            <div class="tech-info-value"><%- technician.name %></div>
+                        </div>
+                        
+                        <div class="tech-info">
+                            <div class="tech-info-label">🎯 Specialty</div>
+                            <div class="tech-info-value"><%- technician.specialty || 'Not specified' %></div>
+                        </div>
+                        
+                        <div class="credentials">
+                            <div class="credentials-label">📧 Email</div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 10px; color: white; font-family: monospace; word-break: break-all;"><%- technician.email %></div>
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('<%- technician.email %>', this)">📋 Copy Email</button>
+                        </div>
+                        
+                        <div class="credentials">
+                            <div class="credentials-label">🔐 Password</div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 10px; color: #fac814; font-family: monospace; word-break: break-all;"><%- defaultPassword %></div>
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('<%- defaultPassword %>', this)">📋 Copy Password</button>
+                        </div>
+                        
+                        <div style="background: rgba(255, 193, 7, 0.1); padding: 12px; border-radius: 10px; border-left: 4px solid #fac814; margin-top: 15px;">
+                            <div style="color: #fac814; font-size: 0.85em; font-weight: 600;">⚠️ Share these credentials securely with the technician</div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div id="manage-tech" class="content-section">
+            <h2 class="section-title">👥 Manage Technicians <small style="font-size: 0.5em; opacity: 0.7;">(Click row to edit)</small></h2>
+            <% if (technicians && technicians.length > 0) { %>
+                <div class="technicians-table"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Specialty</th><th>Date Created</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    <% technicians.forEach(tech => { %>
+                        <tr onclick="openEditModal('<%- tech.id %>', '<%- tech.name %>', '<%- tech.email %>', '<%- tech.phone || '' %>', '<%- tech.specialty || '' %>', '<%- tech.status %>', '<%- tech.specialSkills ? tech.specialSkills.join(',') : '' %>')">
+                            <td><strong><%- tech.name %></strong></td><td><%- tech.email %></td><td><%- tech.phone || 'N/A' %></td>
+                            <td><% if (tech.specialty) { %><span class="skill-tag"><%- tech.specialty %></span><% } %></td>
+                            <td><%- tech.createdAtFormatted || 'N/A' %></td>
+                            <td><span class="status-badge <% if (tech.status === 'active') { %>active<% } else { %>inactive<% } %>"><% if (tech.status === 'active') { %>● Active<% } else { %>● Inactive<% } %></span></td>
+                            <td class="action-buttons" onclick="event.stopPropagation()">
+                                <button class="btn-action btn-delete" onclick="showDeleteConfirmation('<%- tech.id %>', '<%- tech.name %>')">🗑️ Delete</button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody></table></div>
+            <% } else { %>
+                <div class="empty-state"><h2>No Technicians Yet</h2><p>Start building your team by adding technicians.</p></div>
+            <% } %>
+        </div>
+        <div id="job-orders" class="content-section">
+            <h2 class="section-title">📋 All Job Orders</h2>
+            <div class="jobs-table-container">
+                <h3>Submitted Job Orders from All Technicians</h3>
+                <div class="jobs-table-wrapper">
+                    <table class="jobs-table">
+                        <thead><tr><th>Order ID</th><th>Technician</th><th>Customer</th><th>Device</th><th>Brand/Model</th><th>Problems</th><th>Submitted Date</th><th>Status</th></tr></thead>
+                        <tbody id="allJobOrdersBody"><tr><td colspan="8" class="empty-message">Loading job orders...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="diagnostics" class="content-section">
+            <h2 class="section-title">🔍 All Diagnostics <small style="font-size: 0.5em; opacity: 0.7;">(Click row to view details)</small></h2>
+            <div class="jobs-table-container">
+                <h3>Submitted Diagnostics from All Technicians</h3>
+                <div class="jobs-table-wrapper">
+                    <table class="jobs-table">
+                        <thead><tr><th>Diagnostic ID</th><th>Job Order ID</th><th>Technician</th><th>Customer</th><th>Device</th><th>Brand/Model</th><th>Problems</th><th>Estimated Cost</th><th>Submitted Date</th><th>Status</th></tr></thead>
+                        <tbody id="allDiagnosticsBody"><tr><td colspan="10" class="empty-message">Loading diagnostics...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="rtos" class="content-section">
+            <h2 class="section-title">🔄 Return To Owner (RTO) List <small style="font-size: 0.5em; opacity: 0.7;">(Click row to view details)</small></h2>
+            <div class="jobs-table-container">
+                <h3>All RTO Records</h3>
+                <div class="jobs-table-wrapper">
+                    <table class="jobs-table">
+                        <thead><tr><th>RTO ID</th><th>Job Order ID</th><th>Diagnostic ID</th><th>Technician</th><th>Customer Name</th><th>Device Type</th><th>Brand/Model</th><th>Submitted Date</th></tr></thead>
+                        <tbody id="allRTOsBody"><tr><td colspan="8" class="empty-message">Loading RTOs...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LogBook Section -->
+        <div id="logbook" class="content-section">
+            <h2 class="section-title">📚 LogBook Records <small style="font-size: 0.5em; opacity: 0.7;">(All technician entries)</small></h2>
+            <div class="jobs-table-container">
+                <h3>All LogBook Entries</h3>
+                <div class="jobs-table-wrapper">
+                    <table class="jobs-table">
+                        <thead><tr><th>Entry ID</th><th>Technician</th><th>Date</th><th>Customer</th><th>Items</th><th>Cost</th><th>Brand/Model</th><th>Submitted</th></tr></thead>
+                        <tbody id="allLogbookBody"><tr><td colspan="8" class="empty-message">Loading logbook entries...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Dashboard Section -->
+        <div id="financial" class="content-section">
+            <h2 class="section-title">💰 Financial Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-icon">💵</span><div class="stat-value" id="totalIncome">₱0.00</div><div class="stat-label">Total Income</div></div>
+                <div class="stat-card"><span class="stat-icon">📊</span><div class="stat-value" id="entriesCount">0</div><div class="stat-label">Total Entries</div></div>
+                <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-value" id="technicianCount">0</div><div class="stat-label">Active Technicians</div></div>
+                <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-value" id="avgPerTech">₱0.00</div><div class="stat-label">Avg Per Technician</div></div>
+            </div>
+
+            <div class="jobs-table-container" style="margin-top: 30px;">
+                <h3>💼 Technician Earnings Summary</h3>
+                <div class="jobs-table-wrapper">
+                    <table class="jobs-table">
+                        <thead><tr><th>Technician Name</th><th>Email</th><th>Total Earnings</th><th>Number of Entries</th><th>Average Per Entry</th></tr></thead>
+                        <tbody id="technicianEarningsBody"><tr><td colspan="5" class="empty-message">Loading technician earnings...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedSpecialties = [];
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 25;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (4 + Math.random() * 3) + 's';
+            const size = 3 + Math.random() * 6;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particlesContainer.appendChild(particle);
+        }
+
+        const burgerMenu = document.getElementById('burgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        burgerMenu.addEventListener('click', () => {
+            burgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+
+        document.getElementById('menu-dashboard').addEventListener('click', (e) => { e.preventDefault(); showSection('dashboard'); loadJobOrderStats(); });
+        document.getElementById('menu-add-tech').addEventListener('click', (e) => { e.preventDefault(); showSection('add-tech'); });
+        document.getElementById('menu-manage-tech').addEventListener('click', (e) => { e.preventDefault(); showSection('manage-tech'); });
+        document.getElementById('menu-job-orders').addEventListener('click', (e) => { e.preventDefault(); showSection('job-orders'); loadAllJobOrders(); });
+        document.getElementById('menu-diagnostics').addEventListener('click', (e) => { e.preventDefault(); showSection('diagnostics'); loadAllDiagnostics(); });
+        document.getElementById('menu-logbook').addEventListener('click', (e) => { e.preventDefault(); showSection('logbook'); loadAllLogbookEntries(); });
+        document.getElementById('menu-financial').addEventListener('click', (e) => { e.preventDefault(); showSection('financial'); loadFinancialSummary(); });
+        document.getElementById('menu-rtos').addEventListener('click', (e) => { e.preventDefault(); showSection('rtos'); loadAllRTOs(); });
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'dashboard') document.getElementById('menu-dashboard').classList.add('active');
+            else if (sectionId === 'add-tech') document.getElementById('menu-add-tech').classList.add('active');
+            else if (sectionId === 'manage-tech') document.getElementById('menu-manage-tech').classList.add('active');
+            else if (sectionId === 'job-orders') document.getElementById('menu-job-orders').classList.add('active');
+            else if (sectionId === 'diagnostics') document.getElementById('menu-diagnostics').classList.add('active');
+            else if (sectionId === 'logbook') document.getElementById('menu-logbook').classList.add('active');
+            else if (sectionId === 'financial') document.getElementById('menu-financial').classList.add('active');
+            else if (sectionId === 'rtos') document.getElementById('menu-rtos').classList.add('active');
+        }
+
+// Store all diagnostics data for modal access
+        let allDiagnosticsData = [];
+        let lastDiagnosticIndex = 0;
+
+        // Store all job orders data for modal access
+        let allJobOrdersData = [];
+        let lastJobOrderIndex = 0;
+
+        function loadAllDiagnostics() {
+            fetch('/api/admin/diagnostics')
+                .then(r => r.json())
+                .then(result => {
+                    const tbody = document.getElementById('allDiagnosticsBody');
+                    if (!result.success || result.diagnostics.length === 0) { tbody.innerHTML = '<tr><td colspan="11" class="empty-message">No diagnostics yet.</td></tr>'; return; }
+                    allDiagnosticsData = result.diagnostics;
+                    console.log('Loaded diagnostics:', JSON.stringify(result.diagnostics, null, 2)); // Debug log
+                    tbody.innerHTML = '';
+                    result.diagnostics.forEach((diag, index) => {
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+                        row.onclick = () => openDiagnosticModal(index);
+                        // Format problems for table display - check multiple possible fields
+                        let problemsList = 'N/A';
+                        const problems = diag.selectedProblems || diag.problems || [];
+                        if (problems && Array.isArray(problems) && problems.length > 0) {
+                            problemsList = problems.slice(0, 2).join(', ') + (problems.length > 2 ? '...' : '');
+                        }
+                        const diagnosticIdValue = diag.diagnosticId || diag.displayId || diag.docId || diag.id || 'N/A';
+                        row.innerHTML = `<td>${diagnosticIdValue}</td><td>${diag.jobOrderId || 'N/A'}</td><td>${diag.technicianName || 'N/A'}</td><td>${diag.customerName || 'N/A'}</td><td>${diag.deviceType || 'N/A'}</td><td>${diag.brandModel || 'N/A'}</td><td>${problemsList}</td><td>₱${diag.estimatedCost || '0'}</td><td>${diag.submittedDate || 'N/A'}</td><td><span class="status-badge" data-status="${diag.status}">${diag.status}</span></td>`;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    const tbody = document.getElementById('allDiagnosticsBody');
+                    tbody.innerHTML = '<tr><td colspan="11" class="empty-message">Error loading diagnostics.</td></tr>';
+                });
+        }
+
+        function openDiagnosticModal(index) {
+            const diag = allDiagnosticsData[index];
+            if (!diag) return;
+            lastDiagnosticIndex = index;
+            
+            // Build images
+            let imagesHtml = '';
+            if (diag.images && diag.images.length > 0) {
+                imagesHtml = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">';
+                diag.images.forEach((img, idx) => {
+                    imagesHtml += `<div style="width:120px;height:120px;border-radius:8px;overflow:hidden;border:2px solid rgba(35,166,213,0.4);cursor:pointer;" onclick="viewImage('${img.data}', '${img.name || 'Image ' + (idx+1)}', ${index})"><img src="${img.data}" alt="Image ${idx+1}" style="width:100%;height:100%;object-fit:cover;"></div>`;
+                });
+                imagesHtml += '</div>';
+            } else {
+                imagesHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No images uploaded</p>';
+            }
+            
+            // Build video
+            let videoHtml = '';
+            if (diag.videoData) {
+                videoHtml = `<div style="margin-top:10px;"><video controls style="width:100%;max-width:400px;border-radius:10px;border:2px solid rgba(35,166,213,0.4);"><source src="${diag.videoData.data}" type="video/mp4">Your browser does not support video.</video><p style="color:rgba(255,255,255,0.7);margin-top:5px;">${diag.videoData.name || 'Video'}</p></div>`;
+            } else {
+                videoHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No video uploaded</p>';
+            }
+            
+            // Build materials
+            let materialsHtml = '';
+            if (diag.materials && diag.materials.length > 0) {
+                materialsHtml = '<div style="margin-top:10px;">';
+                diag.materials.forEach(mat => {
+                    const outOfStockBadge = mat.outOfStock ? '<span style="background:rgba(255,0,0,0.3);color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:0.75em;margin-left:8px;">OUT OF STOCK</span>' : '';
+                    materialsHtml += `<div style="background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><span>${mat.name}</span><div><span style="color:#23a6d5;">Qty: ${mat.quantity || 1}</span>${outOfStockBadge}</div></div>`;
+                });
+                materialsHtml += '</div>';
+            } else {
+                materialsHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No materials listed</p>';
+            }
+            
+// Build problems - check both selectedProblems and problems fields
+            let problemsForModal = diag.selectedProblems || diag.problems || [];
+            let problemsHtml = '';
+            if (problemsForModal && problemsForModal.length > 0) {
+                problemsHtml = problemsForModal.map(p => `<span style="display:inline-block;background:rgba(35,166,213,0.2);color:#23a6d5;padding:4px 12px;border-radius:15px;font-size:0.85em;margin:3px;">${p}</span>`).join('');
+            } else {
+                problemsHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No problems listed</p>';
+            }
+            
+            const modalContent = `
+                <div style="max-height:70vh;overflow-y:auto;padding-right:10px;">
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Basic Information</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Diagnostic ID</p><p style="color:white;font-weight:600;">${diag.diagnosticId || diag.displayId || diag.docId || diag.id || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Job Order ID</p><p style="color:white;font-weight:600;">${diag.jobOrderId || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Technician</p><p style="color:white;font-weight:600;">${diag.technicianName || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Status</p><p style="color:white;font-weight:600;"><span class="status-badge" data-status="${diag.status}">${diag.status}</span></p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Submitted Date</p><p style="color:white;font-weight:600;">${diag.submittedDate || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Est. Completion</p><p style="color:white;font-weight:600;">${diag.estimatedDurationDate || 'N/A'}</p></div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Customer Information</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Customer Name</p><p style="color:white;font-weight:600;">${diag.customerName || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Phone</p><p style="color:white;font-weight:600;">${diag.customerNumber || 'N/A'}</p></div>
+                            <div style="grid-column:1/-1"><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Address</p><p style="color:white;font-weight:600;">${diag.customerAddress || 'N/A'}</p></div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Device Information</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Device Type</p><p style="color:white;font-weight:600;">${diag.deviceType || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Brand/Model</p><p style="color:white;font-weight:600;">${diag.brandModel || 'N/A'}</p></div>
+                            <div style="grid-column:1/-1"><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Problems</p><div style="margin-top:8px;">${problemsHtml}</div></div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;text-align:center;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;">Estimated Cost</h4>
+                        <p style="color:#75e6a9;font-size:2em;font-weight:700;">PHP ${diag.estimatedCost ? parseFloat(diag.estimatedCost).toLocaleString('en-PH', {minimumFractionDigits:2}) : '0.00'}</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Images (${diag.images ? diag.images.length : 0})</h4>
+                        ${imagesHtml}
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Video</h4>
+                        ${videoHtml}
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Materials (${diag.materials ? diag.materials.length : 0})</h4>
+                        ${materialsHtml}
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">Notes</h4>
+                        <p style="color:${diag.notes ? 'white' : 'rgba(255,255,255,0.5)'};font-style:${diag.notes ? 'normal' : 'italic'};">${diag.notes || 'No additional notes'}</p>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:center;margin-top:20px;">
+                    <button type="button" onclick="closeModal()" class="form-btn modal-btn-back" style="max-width:200px;">Close</button>
+                </div>
+            `;
+showModal('Diagnostic Details ', modalContent);
+        }
+
+        function viewImage(imageData, title, diagIndex) {
+            lastDiagnosticIndex = diagIndex;
+            const imageModalContent = `<div style="text-align:center;"><img src="${imageData}" alt="${title}" style="max-width:100%;max-height:70vh;border-radius:10px;border:2px solid rgba(35,166,213,0.4);"><p style="color:rgba(255,255,255,0.7);margin-top:15px;">${title}</p><div style="display:flex;justify-content:center;margin-top:20px;"><button type="button" onclick="closeModal()" class="form-btn modal-btn-back" style="max-width:150px;">Close</button></div></div>`;
+            showModal('View Image', imageModalContent);
+        }
+
+        function loadJobOrderStats() {
+            fetch('/api/admin/job-order-stats')
+                .then(r => r.json())
+                .then(result => {
+                    if (!result.success) return;
+                    const stats = result.jobOrderStats;
+                    document.querySelector('.total .job-stat-value').textContent = stats.total;
+                    document.querySelector('.request-submitted .job-stat-value').textContent = stats.requestSubmitted;
+                    document.querySelector('.diagnostic .job-stat-value').textContent = stats.diagnostic;
+                    document.querySelector('.pending .job-stat-value').textContent = stats.pending;
+                    document.querySelector('.in-progress .job-stat-value').textContent = stats.inProgress;
+                    document.querySelector('.checking .job-stat-value').textContent = stats.checking;
+                    document.querySelector('.completed .job-stat-value').textContent = stats.completed;
+                })
+                .catch(err => console.error('Error loading stats:', err));
+        }
+
+function loadAllJobOrders() {
+            fetch('/api/job-orders/all')
+                .then(r => r.json())
+                .then(result => {
+                    const tbody = document.getElementById('allJobOrdersBody');
+                    if (!result.success || result.jobOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="empty-message">No job orders yet.</td></tr>'; return; }
+                    allJobOrdersData = result.jobOrders;
+                    console.log('Loaded job orders:', JSON.stringify(result.jobOrders, null, 2)); // Debug log
+                    tbody.innerHTML = '';
+                    result.jobOrders.forEach((order, index) => {
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+                        row.onclick = () => openJobOrderModal(index);
+                        row.innerHTML = `<td>${order.id}</td><td>${order.technicianName||'N/A'}</td><td>${order.customerName}</td><td>${order.deviceType}</td><td>${order.brandModel}</td><td>${(order.selectedProblems||[]).slice(0,2).join(', ')}</td><td>${order.submittedDate||'N/A'}</td><td><span class="status-badge" data-status="${order.status}">${order.status}</span></td>`;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        let allRTOsData = [];
+
+        function loadAllRTOs() {
+            fetch('/api/admin/rtos')
+                .then(r => r.json())
+                .then(result => {
+                    const tbody = document.getElementById('allRTOsBody');
+                    if (!result.success || result.rtos.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="empty-message">No RTOs yet.</td></tr>'; return; }
+                    allRTOsData = result.rtos;
+                    console.log('Loaded RTOs:', JSON.stringify(result.rtos, null, 2));
+                    tbody.innerHTML = '';
+                    result.rtos.forEach((rto, index) => {
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+                        row.onclick = () => openRTOModal(index);
+                        row.innerHTML = `<td>${rto.id || 'N/A'}</td><td>${rto.jobOrderId || 'N/A'}</td><td>${rto.diagnosticId || 'N/A'}</td><td>${rto.technicianName || 'N/A'}</td><td>${rto.customerName || 'N/A'}</td><td>${rto.deviceType || 'N/A'}</td><td>${rto.brandModel || 'N/A'}</td><td>${rto.submittedDate || 'N/A'}</td>`;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    const tbody = document.getElementById('allRTOsBody');
+                    tbody.innerHTML = '<tr><td colspan="8" class="empty-message">Error loading RTOs.</td></tr>';
+                    console.error('Error loading RTOs:', err);
+                });
+        }
+
+        function openRTOModal(index) {
+            const rto = allRTOsData[index];
+            if (!rto) return;
+
+            // Build Job Order Summary
+            let jobOrderSummaryHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No job order linked</p>';
+            if (rto.jobOrderData) {
+                const jo = rto.jobOrderData;
+                jobOrderSummaryHtml = `
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Order ID</p><p style="color:white;font-weight:600;">${jo.id || 'N/A'}</p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Status</p><p style="color:white;font-weight:600;"><span class="status-badge" data-status="${jo.status}">${jo.status}</span></p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Device Type</p><p style="color:white;font-weight:600;">${jo.deviceType || 'N/A'}</p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Brand/Model</p><p style="color:white;font-weight:600;">${jo.brandModel || 'N/A'}</p></div>
+                        <div style="grid-column:1/-1"><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Submitted Date</p><p style="color:white;font-weight:600;">${jo.submittedDate || 'N/A'}</p></div>
+                    </div>
+                `;
+            }
+
+            // Build Diagnostic Summary
+            let diagnosticSummaryHtml = '<p style="color:rgba(255,255,255,0.5);font-style:italic;">No diagnostic linked</p>';
+            if (rto.diagnosticData) {
+                const diag = rto.diagnosticData;
+                const estimatedCost = diag.estimatedCost ? parseFloat(diag.estimatedCost).toLocaleString('en-PH', {minimumFractionDigits:2}) : '0.00';
+                diagnosticSummaryHtml = `
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Diagnostic ID</p><p style="color:white;font-weight:600;">${diag.diagnosticId || diag.id || 'N/A'}</p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Status</p><p style="color:white;font-weight:600;"><span class="status-badge" data-status="${diag.status}">${diag.status}</span></p></div>
+                        <div style="grid-column:1/-1"><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Issues Found</p><p style="color:white;font-weight:600;">${diag.notes || 'Not specified'}</p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Estimated Cost</p><p style="color:#75e6a9;font-weight:600;">₱${estimatedCost}</p></div>
+                        <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Submitted Date</p><p style="color:white;font-weight:600;">${diag.submittedDate || 'N/A'}</p></div>
+                    </div>
+                `;
+            }
+
+            const modalContent = `
+                <div style="max-height:70vh;overflow-y:auto;padding-right:10px;">
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">RTO Information</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">RTO ID</p><p style="color:white;font-weight:600;">${rto.id || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Status</p><p style="color:white;font-weight:600;"><span class="status-badge" data-status="${rto.status || 'Pending'}">${rto.status || 'Pending'}</span></p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Technician</p><p style="color:white;font-weight:600;">${rto.technicianName || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Customer</p><p style="color:white;font-weight:600;">${rto.customerName || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Device Type</p><p style="color:white;font-weight:600;">${rto.deviceType || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Brand/Model</p><p style="color:white;font-weight:600;">${rto.brandModel || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Submitted Date & Time</p><p style="color:#fac814;font-weight:600;">${rto.submittedDate || 'N/A'}</p></div>
+                            <div><p style="color:rgba(255,255,255,0.6);font-size:0.8em;text-transform:uppercase;">Release Date</p><p style="color:white;font-weight:600;">${rto.dateReleased || 'N/A'}</p></div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">📋 Job Order Details Summary</h4>
+                        ${jobOrderSummaryHtml}
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:15px;padding:20px;margin-bottom:20px;">
+                        <h4 style="color:#23a6d5;margin-bottom:15px;font-size:1.1em;border-bottom:1px solid rgba(35,166,213,0.3);padding-bottom:10px;">🔍 Diagnostic Details Summary</h4>
+                        ${diagnosticSummaryHtml}
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:center;margin-top:20px;">
+                    <button type="button" onclick="closeModal()" class="form-btn modal-btn-back" style="max-width:200px;">Close</button>
+                </div>
+            `;
+            showModal('RTO Details - ' + (rto.id || ''), modalContent);
+        }
+
+        const specialtyInput = document.getElementById('specialtyInput');
+        const specialtyDropdown = document.getElementById('specialtyDropdown');
+        specialtyInput.addEventListener('focus', () => specialtyDropdown.classList.add('show'));
+        specialtyInput.addEventListener('input', () => specialtyDropdown.classList.add('show'));
+        document.addEventListener('click', (e) => { if (!e.target.closest('.specialty-selector')) specialtyDropdown.classList.remove('show'); });
+        function selectFromDropdown(v) { if (v) addSpecialtyValue(v); specialtyInput.value = ''; specialtyDropdown.value = ''; specialtyDropdown.classList.remove('show'); }
+        function addSpecialty() { const v = specialtyInput.value.trim(); if (v) addSpecialtyValue(v); specialtyInput.value = ''; }
+        specialtyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSpecialty(); } });
+        function addSpecialtyValue(v) { if (!selectedSpecialties.includes(v)) { selectedSpecialties.push(v); renderSpecialties(); } }
+        function removeSpecialty(v) { selectedSpecialties = selectedSpecialties.filter(s => s !== v); renderSpecialties(); }
+        function renderSpecialties() {
+            const c = document.getElementById('selectedSpecialties');
+            c.innerHTML = '';
+            selectedSpecialties.forEach(s => { const t = document.createElement('span'); t.className = 'specialty-tag'; t.innerHTML = `${s} <span class="remove" onclick="removeSpecialty('${s}')">×</span>`; c.appendChild(t); });
+            document.getElementById('specialty').value = selectedSpecialties.join(', ');
+        }
+        const addTechFormElement = document.getElementById('addTechForm');
+        addTechFormElement.addEventListener('submit', function(e) { 
+            if (selectedSpecialties.length === 0) { 
+                e.preventDefault(); 
+                showNotification('⚠️ Please add at least one specialty', 'warning'); 
+                return false;
+            }
+            // Ensure specialty field is populated before submission
+            document.getElementById('specialty').value = selectedSpecialties.join(', ');
+            // Optional: Add loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+            }
+        });
+
+        function showNotification(msg, type = 'success') {
+            const n = document.createElement('div');
+            n.className = `notification ${type}`;
+            n.innerHTML = `<span>${msg}</span>`;
+            document.body.appendChild(n);
+            setTimeout(() => { n.style.animation = 'slideOut 0.5s ease-in forwards'; setTimeout(() => n.remove(), 500); }, 4000);
+        }
+
+        function openEditModal(techId, name, email, phone, specialty, status, specialSkills) {
+            const skillsArray = specialSkills ? specialSkills.split(',').filter(s => s.trim()) : [];
+            fetch(`/api/technician/${techId}/password`).then(r => r.json()).then(data => {
+                const pwd = data.success ? data.password : '********';
+                showModal('Edit Technician', `
+                    <input type="hidden" id="editStatus" value="${status}">
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item"><label>Full Name</label><input type="text" id="editName" value="${name}"></div>
+                        <div class="modal-info-item"><label>Email Address</label><input type="email" id="editEmail" value="${email}"></div>
+                        <div class="modal-info-item"><label>Phone Number</label><input type="tel" id="editPhone" value="${phone||''}" placeholder="Enter phone"></div>
+                        <div class="modal-info-item"><label>Current Password</label><input type="text" id="currentPassword" value="${pwd}" readonly style="background:rgba(35,166,213,0.15);border-color:rgba(35,166,213,0.4);color:#23d5ab;"></div>
+                        <div class="modal-info-item"><label style="color:#23a6d5">New Password <span style="font-weight:400;opacity:0.7">(Leave blank to keep)</span></label><div class="password-input-wrapper"><input type="password" id="editPassword" placeholder="Enter new password"><span class="password-toggle-icon" onclick="toggleEditPasswordVisibility()">👁️</span></div></div>
+                        <div class="modal-info-item"><label>Primary Specialty</label><input type="text" id="editSpecialty" value="${specialty}"></div>
+                    </div>
+                    <div class="modal-info-item" style="grid-column:1/-1;margin-bottom:20px"><label>Special Skills (comma separated)</label><input type="text" id="editSpecialSkills" value="${skillsArray.join(', ')}" placeholder="e.g., CCTV, Printer"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:30px">
+                        <button type="button" onclick="closeModal()" class="form-btn modal-btn-back">Back</button>
+                        <button type="button" onclick="saveTechnician('${techId}')" class="form-btn modal-btn-save">Save Changes</button>
+                    </div>
+                    <div style="display:flex;justify-content:center;margin-top:15px">
+                        <button type="button" onclick="toggleStatusFromModal('${techId}','${status}','${name}')" class="form-btn" style="background:linear-gradient(135deg,${status==='active'?'#f59e0b':'#10b981'} 0%,${status==='active'?'#d97706':'#059669'} 100%)">${status==='active'?'🔒 Block':'✅ Activate'}</button>
+                    </div>
+                `);
+            }).catch(() => {
+                showModal('Edit Technician', `<input type="hidden" id="editStatus" value="${status}">
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item"><label>Full Name</label><input type="text" id="editName" value="${name}"></div>
+                        <div class="modal-info-item"><label>Email Address</label><input type="email" id="editEmail" value="${email}"></div>
+                        <div class="modal-info-item"><label>Phone Number</label><input type="tel" id="editPhone" value="${phone||''}"></div>
+                        <div class="modal-info-item"><label>Current Password</label><input type="text" id="currentPassword" value="********" readonly></div>
+                        <div class="modal-info-item"><label>Primary Specialty</label><input type="text" id="editSpecialty" value="${specialty}"></div>
+                    </div>
+                    <div class="modal-info-item" style="grid-column:1/-1"><label>Special Skills</label><input type="text" id="editSpecialSkills" value="${skillsArray.join(', ')}"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:30px">
+                        <button type="button" onclick="closeModal()" class="form-btn modal-btn-back">Back</button>
+                        <button type="button" onclick="saveTechnician('${techId}')" class="form-btn modal-btn-save">Save Changes</button>
+                    </div>`);
+            });
+        }
+
+        function saveTechnician(techId) {
+            const data = {
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                password: document.getElementById('editPassword').value,
+                specialty: document.getElementById('editSpecialty').value,
+                status: document.getElementById('editStatus').value,
+                specialSkills: document.getElementById('editSpecialSkills').value.split(',').map(s=>s.trim()).filter(s=>s)
+            };
+            fetch(`/api/technician/${techId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) })
+            .then(r=>r.json()).then(result => {
+                if (result.success) { showNotification('✅ Technician updated successfully', 'success'); closeModal(); setTimeout(()=>location.reload(),1500); }
+                else showNotification('❌ Error updating technician', 'error');
+            }).catch(err => showNotification('❌ Error: '+err.message, 'error'));
+        }
+
+        function toggleStatusFromModal(techId, currentStatus, techName) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            fetch(`/api/technician/${techId}/status`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status:newStatus}) })
+            .then(r=>r.json()).then(result => {
+                if (result.success) { showNotification(`✅ Technician ${techName} ${newStatus==='active'?'activated':'blocked'}`, 'success'); closeModal(); setTimeout(()=>location.reload(),1500); }
+                else showNotification('❌ Error updating status', 'error');
+            });
+        }
+
+        function showModal(title, content) {
+            document.getElementById('modalHeader').innerHTML = `<h3>${title}</h3><button class="modal-close" onclick="closeModal()">×</button>`;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modal').classList.add('active');
+        }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        function toggleEditPasswordVisibility() {
+            const i = document.getElementById('editPassword');
+            i.type = i.type === 'password' ? 'text' : 'password';
+        }
+        document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+        
+        function showDeleteConfirmation(techId, techName) {
+            showModal('Delete Technician', '<div class="delete-modal-warning"><span class="warning-icon">!</span><h4>Confirm Delete</h4><p>Are you sure you want to delete this technician?</p><p class="tech-name">' + techName + '</p><div class="warning-text">Warning: This action cannot be undone.</div><div class="delete-modal-buttons"><button type="button" onclick="closeModal()" class="form-btn modal-btn-back">Cancel</button><button type="button" onclick="confirmDeleteTechnician(\'' + techId + '\')" class="form-btn btn-confirm-delete">Delete</button></div></div>');
+        }
+        
+        function confirmDeleteTechnician(techId) {
+            fetch('/api/technician/' + techId, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.success) {
+                        showNotification('Technician deleted successfully', 'success');
+                        closeModal();
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification('Error: ' + result.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    showNotification('Error: ' + err.message, 'error');
+                });
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = 'rgba(40, 167, 69, 0.5)';
+                btn.style.color = '#75e6a9';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(35, 166, 213, 0.3)';
+                    btn.style.color = '#23a6d5';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        // Load all logbook entries
+        function loadAllLogbookEntries() {
+            fetch('/api/logbook/all')
+                .then(r => r.json())
+                .then(result => {
+                    const tbody = document.getElementById('allLogbookBody');
+                    if (result.success && result.logbookEntries && result.logbookEntries.length > 0) {
+                        tbody.innerHTML = result.logbookEntries.map(entry => {
+                            const itemsText = Array.isArray(entry.itemsBought) ? entry.itemsBought.slice(0, 2).join(', ') + (entry.itemsBought.length > 2 ? '...' : '') : entry.itemsBought;
+                            return `<tr><td>${entry.id.substring(0, 8)}</td><td>${entry.technicianName || 'N/A'}</td><td>${entry.logbookDate || 'N/A'}</td><td>${entry.customerName || 'N/A'}</td><td title="${Array.isArray(entry.itemsBought) ? entry.itemsBought.join(', ') : entry.itemsBought}">${itemsText}</td><td>₱${parseFloat(entry.cost || 0).toFixed(2)}</td><td>${entry.brandModel || 'N/A'}</td><td>${entry.submittedDate || 'N/A'}</td></tr>`;
+                        }).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" class="empty-message">No logbook entries found.</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('allLogbookBody').innerHTML = '<tr><td colspan="8" class="empty-message">Error loading logbook entries</td></tr>';
+                    console.error('Error:', err);
+                });
+        }
+
+        // Load financial summary
+        function loadFinancialSummary() {
+            fetch('/api/admin/financial-summary')
+                .then(r => r.json())
+                .then(result => {
+                    if (result.success) {
+                        const totalIncome = result.totalIncome || 0;
+                        const entriesCount = result.entriesCount || 0;
+                        const technicianSummary = result.technicianSummary || [];
+                        const techCount = technicianSummary.length;
+                        const avgPerTech = techCount > 0 ? totalIncome / techCount : 0;
+
+                        document.getElementById('totalIncome').textContent = '₱' + parseFloat(totalIncome).toFixed(2);
+                        document.getElementById('entriesCount').textContent = entriesCount;
+                        document.getElementById('technicianCount').textContent = techCount;
+                        document.getElementById('avgPerTech').textContent = '₱' + parseFloat(avgPerTech).toFixed(2);
+
+                        const tbody = document.getElementById('technicianEarningsBody');
+                        if (technicianSummary && technicianSummary.length > 0) {
+                            tbody.innerHTML = technicianSummary.map(tech => {
+                                const avgPerEntry = tech.entriesCount > 0 ? tech.totalEarnings / tech.entriesCount : 0;
+                                return `<tr><td>${tech.technicianName || 'N/A'}</td><td>${tech.technicianEmail || 'N/A'}</td><td>₱${parseFloat(tech.totalEarnings).toFixed(2)}</td><td>${tech.entriesCount}</td><td>₱${parseFloat(avgPerEntry).toFixed(2)}</td></tr>`;
+                            }).join('');
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="5" class="empty-message">No earnings data available.</td></tr>';
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading financial summary:', err);
+                    document.getElementById('technicianEarningsBody').innerHTML = '<tr><td colspan="5" class="empty-message">Error loading earnings data</td></tr>';
+                });
+        }
+    </script>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader"></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNC System - Website Repair Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Enhanced Animated Background with Intense Glow */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f702a8, #0af);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ultra Glow Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.8) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.8) 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .glow-orb-3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(35, 166, 213, 0.7) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -2s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Floating Particles - More Intense */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-120px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Main Container - Landscape Horizontal Layout */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            padding: 40px 60px;
+            z-index: 10;
+            position: relative;
+            gap: 60px;
+            animation: slideInDown 1s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Left Side - Logo & Title */
+        .content-left {
+            flex: 1;
+            text-align: left;
+        }
+
+        .logo {
+            font-size: 100px;
+            margin-bottom: 25px;
+            animation: bounce 2s infinite, intenseGlow 1.5s ease-in-out infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes intenseGlow {
+            from { 
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) 
+                        drop-shadow(0 0 40px rgba(102, 126, 234, 0.6))
+                        drop-shadow(0 0 60px rgba(118, 75, 162, 0.4)); 
+            }
+            to { 
+                filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)) 
+                        drop-shadow(0 0 80px rgba(102, 126, 234, 0.9))
+                        drop-shadow(0 0 100px rgba(118, 75, 162, 0.7)); 
+            }
+        }
+
+        h1 {
+            font-size: 64px;
+            background: linear-gradient(135deg, #fff 0%, #a8c0ff 30%, #3f2b96 70%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 900;
+            animation: fadeInLeft 1s ease-out 0.2s both;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 26px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 20px;
+            animation: fadeInRight 1s ease-out 0.4s both;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .description {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 500px;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Right Side - Button & Features */
+        .content-right {
+            flex: 1;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 35px;
+        }
+
+        /* Ultra Glowing Button */
+        .login-btn {
+            display: inline-block;
+            padding: 22px 65px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f702a8 100%);
+            background-size: 200% 200%;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 60px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 
+                0 0 30px rgba(102, 126, 234, 0.8),
+                0 0 60px rgba(118, 75, 162, 0.6),
+                0 0 90px rgba(247, 2, 168, 0.4),
+                0 15px 35px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s ease;
+            animation: fadeInUp 1s ease-out 0.8s both, btnGradientMove 3s ease infinite;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        @keyframes btnGradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 0 50px rgba(102, 126, 234, 1),
+                0 0 80px rgba(118, 75, 162, 0.9),
+                0 0 120px rgba(247, 2, 168, 0.7),
+                0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 
+                0 0 70px rgba(102, 126, 234, 1),
+                0 0 100px rgba(118, 75, 162, 1),
+                0 0 150px rgba(247, 2, 168, 0.9),
+                0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-btn:active::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Features Section - Horizontal */
+        .features {
+            display: flex;
+            justify-content: flex-start;
+            gap: 25px;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px 30px;
+            min-width: 160px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2), 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 0 40px rgba(102, 126, 234, 0.5),
+                0 0 60px rgba(118, 75, 162, 0.3),
+                0 20px 50px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+            animation: pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.5;
+        }
+
+        /* Enhanced Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 1000px;
+                padding: 30px 40px;
+            }
+            
+            h1 {
+                font-size: 48px;
+            }
+            
+            .logo {
+                font-size: 80px;
+            }
+            
+            .features {
+                gap: 18px;
+            }
+            
+            .feature {
+                padding: 20px 22px;
+                min-width: 140px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+                padding: 30px;
+            }
+            
+            .content-left, .content-right {
+                text-align: center;
+                align-items: center;
+            }
+            
+            .features {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            h1 {
+                font-size: 42px;
+            }
+            
+            .description {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 32px;
+                letter-spacing: 2px;
+            }
+
+            .subtitle {
+                font-size: 20px;
+            }
+
+            .logo {
+                font-size: 60px;
+            }
+
+            .login-btn {
+                padding: 18px 45px;
+                font-size: 16px;
+            }
+
+            .features {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .feature {
+                width: 100%;
+            }
+            
+            .feature-icon {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="container">
+        <div class="content-left">
+            <div class="logo">🔧</div>
+            <h1>RNC System</h1>
+            <p class="subtitle">Professional Website Repair Service</p>
+            <p class="description">
+                We fix broken websites, optimize performance, and keep your online presence running smoothly. 
+                Expert solutions for all your web maintenance needs.
+            </p>
+        </div>
+
+        <div class="content-right">
+            <a href="/login" class="login-btn">Access Login</a>
+
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-title">Fast Repairs</div>
+                    <div class="feature-text">Quick turnaround</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🛡️</span>
+                    <div class="feature-title">Secure</div>
+                    <div class="feature-text">Data protected</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📞</span>
+                    <div class="feature-title">24/7 Support</div>
+                    <div class="feature-text">Always here to help</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles with enhanced glow
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 40;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 4 + 's';
+            particle.style.animationDuration = (3 + Math.random() * 3) + 's';
+            
+            // Vary particle sizes
+            const size = 4 + Math.random() * 10;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Random colors with glow
+            const colors = ['#667eea', '#764ba2', '#23a6d5', '#f702a8', '#ffffff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+            
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
